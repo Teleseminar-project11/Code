@@ -1,15 +1,18 @@
 package com.example.automaticvideodirector;
 
+
 import android.net.*;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -23,17 +26,23 @@ public class MainActivity extends Activity {
 	
 	
 	private static boolean isConnected = false;
-	TextView textView;
-	Button buttonIsConnected;
-	Button buttonConnect;
+	private TextView textView;
+	private Button buttonIsConnected;
+	private Button buttonConnect;
+	private Button buttonRecord;	
 	//For Testing
-	Metadata data = new Metadata("id-1","file1.mov","x-34");
+	private MetaData data = new MetaData("id-1","file1.mov","x-34");
+	
+	
+	//Listener
+	
 	
 	
 	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
@@ -43,9 +52,13 @@ public class MainActivity extends Activity {
 		buttonConnect = (Button) findViewById(R.id.button_connect);
 		buttonConnect.setOnClickListener(connectListener);
 		
-		textView = (TextView) findViewById(R.id.textView_status);
+		buttonRecord = (Button) findViewById(R.id.button_record);
+		buttonRecord.setOnClickListener(recordAndShareListener);
+		
+		textView = (TextView) findViewById(R.id.textView_welcome);
+		
+		
 	}
-
 	
 	
 	@Override
@@ -56,6 +69,10 @@ public class MainActivity extends Activity {
 	}
 	
 
+	
+	
+	
+	
 	/*
 	 * Click Listener
 	 */
@@ -82,6 +99,24 @@ public class MainActivity extends Activity {
 		}
 	};
 	
+	OnClickListener recordAndShareListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			
+			isConnected();
+			if(isConnected == true){
+				
+				Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+				Log.d(DEBUG_TAG, "Change to Video CameraActivity.class");
+				startActivity(intent);
+		    	
+		    } else {
+		    	textView.setText("No network connection available.");
+		    }
+		}
+	};
+	
 	
 	
 	/*
@@ -94,9 +129,13 @@ public class MainActivity extends Activity {
 			    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			    if (networkInfo != null && networkInfo.isConnected()) {
 			    	isConnected = true;
+			    	Toast.makeText(MainActivity.this, "Your device has connection to the Inetrnet",
+			    			Toast.LENGTH_LONG).show();
 			    	Log.d(DEBUG_TAG, "Connection possible");
 			    } else {
 			    	isConnected = false;
+			    	Toast.makeText(MainActivity.this, "Your device has NO connection to the Inetrnet",
+			    			Toast.LENGTH_LONG).show();
 			    	Log.d(DEBUG_TAG, "Connection not possible");
 			    }
 				return isConnected;

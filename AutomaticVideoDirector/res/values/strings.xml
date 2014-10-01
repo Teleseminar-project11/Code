@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AutomaticVideoDirector</string>
+    <string name="app_name">Automatic Video Director</string>
+
     <string name="action_settings">Settings</string>
-    
-    
-    
+	<string name="welcome">Welcome to the Automatic Video Director!</string>
     
 </resources>
