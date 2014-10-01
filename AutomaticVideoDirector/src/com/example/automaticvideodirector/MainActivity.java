@@ -73,7 +73,8 @@ public class MainActivity extends Activity {
 			
 				isConnected();
 				if(isConnected = true){
-			    	new HttpAsyncTask("POST", data).execute();
+//			    	new HttpAsyncTask("POST", data).execute();
+					new HttpAsyncTask("GET", data).execute();
 			    	Log.d(DEBUG_TAG, "Http Task instance created");
 			    } else {
 			    	textView.setText("No network connection available.");

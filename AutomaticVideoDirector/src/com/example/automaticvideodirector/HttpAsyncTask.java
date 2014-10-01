@@ -1,8 +1,10 @@
 package com.example.automaticvideodirector;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -37,7 +39,11 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 		Log.d(DEBUG_TAG, "doInBackground first line");
 		
 		if(request.equals("GET")){
-			//...
+			try {
+				this.httpGet("http://www.google.com/");
+			} catch (IOException e) {
+				return "unable to get data";
+			}
 		}
 		else if(request.equals("POST")){
 			try{
@@ -110,4 +116,22 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
     	   }
     	   return response;
         }
+	
+	public void httpGet(String myurl) throws IOException {
+		URL url = new URL(myurl);
+		HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+		try {
+//			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					urlConnection.getInputStream()));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+			reader.close();
+		} finally {
+			urlConnection.disconnect();
+		}
+
+    }
 }
