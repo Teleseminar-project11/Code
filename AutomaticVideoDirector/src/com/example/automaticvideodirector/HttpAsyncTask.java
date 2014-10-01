@@ -24,10 +24,10 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 	
 	private static final String DEBUG_TAG = "HTTP-POST-AutomaticVideoDirector";
 	private String request;
-	private Metadata data;
+	private MetaData data;
 	
 	
-	public HttpAsyncTask(String request, Metadata data){
+	public HttpAsyncTask(String request, MetaData data){
 		this.request=request;
 		this.data = data;
 	}
@@ -55,7 +55,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 	/*
 	 * HTTP requests
 	 */
-	public String httpPost(String myurl, Metadata data) throws IOException{
+	public String httpPost(String myurl, MetaData data) throws IOException{
 		
         String response = "";
         

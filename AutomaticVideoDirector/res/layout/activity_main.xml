@@ -1,35 +1,43 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    
     tools:context=".MainActivity" >
 
-	<TextView 
-		android:id="@+id/textView_status"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-	/>
-	<Button
-    	android:id="@+id/button_connect"
-    	android:text="HTTP POST (Testing)"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_gravity="center"
-	/>
-  
-  <Button 
-  	android:id="@+id/button_isConnected"
-  	android:text="Is connected?"
-  	android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-      />
-  
-  
+    <TextView
+        android:id="@+id/textView_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="20dp"
+        android:background="#03a9f4"
+        android:text="@+string/welcome"
+        android:textSize="30sp"
+        android:textColor="#fff" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/button_isConnected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/textView_welcome"
+        android:text="Is connected?" />
+
+    <Button
+        android:id="@+id/button_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/button_connect"
+        android:text="Record and Share" />
+
+    <Button
+        android:id="@+id/button_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_welcome"
+        android:layout_below="@+id/textView_welcome"
+        android:text="HTTP POST (Testing)" />
+
+</RelativeLayout>
