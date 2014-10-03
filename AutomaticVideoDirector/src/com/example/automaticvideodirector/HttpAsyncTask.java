@@ -13,6 +13,8 @@ import java.net.URL;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.automaticvideodirector.database.MetaData;
+
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -81,7 +83,6 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
     	    try {
 				jsonParam.put("id", data.getId());
 				jsonParam.put("filename", data.getVideoFile());
-        	    jsonParam.put("data", data.getSomeVideoData());
         	    Log.d(DEBUG_TAG, "JSON right");
 			} catch (JSONException e) {
 				Log.d(DEBUG_TAG, "JSON wrong");

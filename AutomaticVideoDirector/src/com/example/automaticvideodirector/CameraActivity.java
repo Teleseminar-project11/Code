@@ -6,10 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,7 +20,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
-
+/**
+ * @author thilo
+ * 
+ * This activity is responsible to record a video (of max. 20sec???). 
+ * After creating the mediafile, a connection to the database has to be established to insert all the necessary meta-information.-->MetaDatSource.insertMetaData();
+ * Additionally a HTTPURLCONNECTION has to be created to POST the metadata via JSON to the server--> new HttpAsnycTask("POST",MetaData metaData);
+ * Last but not least information to user if successful or not.
+ * 
+ */
 public class CameraActivity extends Activity {
 	
 	
@@ -30,6 +40,7 @@ public class CameraActivity extends Activity {
 	private Camera cameraInstance;
 	private CameraPreview cameraPreview;
 	private MediaRecorder mediaRecorder;
+	
 	
 	
 	
@@ -98,8 +109,10 @@ public class CameraActivity extends Activity {
 	    // Step 4: Set output file
 	    mediaRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
 	    Log.d("CameraActivity","in preparevideorecorder4");
+	    
 	    // Step 5: Set the preview output
 	    mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
+	    
 
 	    // Step 6: Prepare configured MediaRecorder
 	    try {
@@ -146,12 +159,12 @@ public class CameraActivity extends Activity {
 
 	/** Create a File for saving an image or video */
 	private static File getOutputMediaFile(int type){
-	    // To be safe, you should check that the SDCard is mounted
-	    // using Environment.getExternalStorageState() before doing this.
+	    // To be safe, we also should check that the SDCard is mounted
+	    // using Environment.getExternalStorageState() before doing this!!!!!!!!!!!!!!.
 		Log.d("CameraActivity","in getOutputMediaFile1");
 	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
 	              Environment.DIRECTORY_PICTURES), "MyCameraApp");
-	    // This location works best if you want the created images to be shared
+	    // This location works best if we want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 	    Log.d("CameraActivity",mediaStorageDir.getPath());
 	    // Create the storage directory if it does not exist
@@ -175,7 +188,7 @@ public class CameraActivity extends Activity {
 	    } else {
 	        return null;
 	    }
-
+	    
 	    return mediaFile;
 	}
 	

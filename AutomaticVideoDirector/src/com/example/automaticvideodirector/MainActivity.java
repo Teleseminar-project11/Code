@@ -1,6 +1,8 @@
 package com.example.automaticvideodirector;
 
 
+import com.example.automaticvideodirector.database.MetaData;
+
 import android.net.*;
 import android.os.Bundle;
 import android.app.Activity;
@@ -31,7 +33,7 @@ public class MainActivity extends Activity {
 	private Button buttonConnect;
 	private Button buttonRecord;	
 	//For Testing
-	private MetaData data = new MetaData("id-1","file1.mov","x-34");
+//	private MetaData data = new MetaData("id-1","file1.mov","x-34");
 	
 	
 	//Listener
@@ -83,15 +85,16 @@ public class MainActivity extends Activity {
 			isConnected();
 		}
 	};
-	OnClickListener connectListener = new OnClickListener() {
-		
+	
+	
+	OnClickListener connectListener = new OnClickListener() {	
 		@Override
 		public void onClick(View v) {
 			
 				isConnected();
 				if(isConnected = true){
 //			    	new HttpAsyncTask("POST", data).execute();
-					new HttpAsyncTask("GET", data).execute();
+//					new HttpAsyncTask("GET", data).execute();
 			    	Log.d(DEBUG_TAG, "Http Task instance created");
 			    } else {
 			    	textView.setText("No network connection available.");
