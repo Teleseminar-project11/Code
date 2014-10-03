@@ -20,24 +20,63 @@
         android:id="@+id/button_isConnected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@id/textView_welcome"
-        android:text="Is connected?" />
-
-    <Button
-        android:id="@+id/button_record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/button_connect"
-        android:text="Record and Share" />
+        android:text="@string/is_connected" />
 
     <Button
         android:id="@+id/button_connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView_welcome"
+        android:layout_alignLeft="@id/textView_welcome"
+        android:layout_alignStart="@id/textView_welcome"
         android:layout_below="@+id/textView_welcome"
-        android:text="HTTP POST (Testing)" />
+        android:text="@string/post_test" />
+
+    <Button
+        android:id="@+id/button_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/button_connect"
+        android:text="@string/record_and_share" />
+    
+    <Button
+        android:id="@+id/button_http_get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/button_connect"
+        android:onClick="sendHttpGet"
+        android:text="@string/button_http_get" />
+    
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/button_record"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/select_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/select_file" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="pickFile"
+            android:text="@string/button_browse" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="sendFile"
+            android:text="@string/button_send" />
+    </LinearLayout>
 
 </RelativeLayout>
