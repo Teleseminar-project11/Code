@@ -15,6 +15,6 @@
     <string name="title_activity_display_message">Query result</string>
     <string name="button_http_get">Send HTTP GET</string>
     
-    <string name="video_upload_url">http://192.168.43.203:1234/hello</string>
-    <string name="video_list_url">http://192.168.43.203:1234/hello</string>
+    <string name="video_upload_url">http://192.168.137.1:1234/event/1/</string>
+    <string name="video_list_url">http://192.168.137.1:1234/selected</string>
 </resources>

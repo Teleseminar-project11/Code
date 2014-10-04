@@ -153,9 +153,9 @@ public class MainActivity extends Activity {
 				new HttpAsyncTask.Callback() {
 					@Override
 					public void run(String result) {
-						try {
+						if (result != null) {
 							show_toast(result);
-						} catch (Exception e) {
+						} else {
 							show_toast("Upload failed");
 						}
 					}

@@ -41,9 +41,9 @@ public class DisplayMessageActivity extends Activity {
 			new HttpAsyncTask.Callback() {
 				@Override
 				public void run(String result) {
-					try {
+					if (result != null) {
 	    				mResponseTextView.setText(result);
-	    			} catch (Exception e) {
+	    			} else {
 	    				mResponseTextView.setText("HTTP_GET failed");
 	    			}
 				}

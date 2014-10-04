@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,17 +64,17 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 				try {
 					return httpGet(url);
 				} catch (IOException e) {
-					return "HTTP_GET failed";
+					Log.d(DEBUG_TAG, e.getMessage());
+					return null;
 				}
 			} 
 			case HTTP_POST: {
+				Log.d(DEBUG_TAG, "before postData is called");
 				try{
-					Log.d(DEBUG_TAG, "before postData is called");
-					httpPost(url, data);
-					Log.d(DEBUG_TAG, "postData executed");
+					return httpPost(url, data);
 				}
 				catch (IOException e){
-					return "unable to send data";
+					return null;
 				}
 			} 
 			case HTTP_UPLOAD: {
@@ -81,7 +82,8 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 				try {
 					return httpFileUpload(url, data);
 				} catch (IOException e) {
-					return "Upload failed";
+					Log.d(DEBUG_TAG, e.getMessage());
+					return null;
 				}
 			}
 		}
@@ -96,7 +98,9 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 		} else {
 			Log.d(DEBUG_TAG, result);
 		}
-		callback.run(result);
+		if (callback != null) {
+			callback.run(result);
+		}
 	}
 	
 	/*
@@ -191,38 +195,24 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 	}
 	
 	public String httpFileUpload(String myurl, MetaData data) throws IOException {
-		String lineEnd = "\r\n";
-		String twoHyphens = "--";
-		String boundary = "*****";
 
-		URL url = new URL(myurl);
+		URL url = new URL(myurl + "/" + new File(data.getVideoFile()).getName());
 		HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 		try {
 			urlConnection.setDoOutput(true);
 			urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
-			urlConnection.setRequestMethod("POST");
+			urlConnection.setRequestMethod("PUT");
 			urlConnection.setChunkedStreamingMode(0);
 			urlConnection.setRequestProperty("Connection", "Keep-Alive");
 			urlConnection.setRequestProperty("Cache-Control", "no-cache");
-			urlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary="+boundary);
+			urlConnection.setRequestProperty("Content-Type", "video/mpeg");
+			urlConnection.connect();
 			
 			Log.d(DEBUG_TAG, "Url Connection setup complete");
 
             DataOutputStream dos = new DataOutputStream(urlConnection.getOutputStream());
             
-            dos.writeBytes(twoHyphens + boundary + lineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"timestamp\""+ lineEnd);
-            dos.writeBytes(lineEnd);
-            dos.writeBytes(data.getTimeStamp() + "");
-            dos.writeBytes(lineEnd);
-            dos.writeBytes(twoHyphens + boundary + lineEnd);
-            
-            Log.d(DEBUG_TAG, "Timestamp written");
-                
-            dos.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + data.getVideoFile() +"\"" + lineEnd);
-            dos.writeBytes(lineEnd);
-
             FileInputStream fstrm = new FileInputStream(data.getVideoFile());
             // create a buffer of maximum size
             int bytesAvailable = fstrm.available();
@@ -231,7 +221,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
             int bufferSize = Math.min(bytesAvailable, maxBufferSize);
             byte[ ] buffer = new byte[bufferSize];
 
-            // read file and write it into form...
+            // read file and write it into stream...
             int bytesRead = fstrm.read(buffer, 0, bufferSize);
 
             while (bytesRead > 0) {
@@ -240,8 +230,6 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
                     bufferSize = Math.min(bytesAvailable,maxBufferSize);
                     bytesRead = fstrm.read(buffer, 0,bufferSize);
             }
-            dos.writeBytes(lineEnd);
-            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 
             // close streams
             fstrm.close();
@@ -259,6 +247,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 			}
 			reader.close();
             dos.close();
+            
             Log.d(DEBUG_TAG, responseBody.toString());
             return responseBody.toString();
 		} finally {
