@@ -2,6 +2,7 @@ package com.example.automaticvideodirector.database;
 
 import android.content.Context;
 import android.database.sqlite.*;
+import android.util.Log;
 
 public class VideoDatabaseHelper extends SQLiteOpenHelper {
 	
@@ -10,13 +11,12 @@ public class VideoDatabaseHelper extends SQLiteOpenHelper {
     
 	public static final String TABLE_METADATA = "metadata";
     
-    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_ID = "id";
     public static final String COLUMN_FILENAME = "filename";
     public static final String COLUMN_TIMESTAMP = "timestamp";
     public static final String COLUMN_DURATION = "duration";
     public static final String COLUMN_RESOLUTION = "resolution";
     public static final String COLUMN_FRAMERATE = "framerate";
-    public static final String COLUMN_STATUS = "status";
     
 
     
@@ -25,8 +25,8 @@ public class VideoDatabaseHelper extends SQLiteOpenHelper {
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
         + TABLE_METADATA + "(" + COLUMN_ID + " integer primary key autoincrement, "
-        + COLUMN_FILENAME + " text not null"+ COLUMN_TIMESTAMP + " text not null"+ COLUMN_DURATION + " text not null"
-        + COLUMN_RESOLUTION + " text not null"+ COLUMN_FRAMERATE+ " text not null"+COLUMN_STATUS+"text not null)";
+        + COLUMN_FILENAME + " text,"+ COLUMN_TIMESTAMP + " text,"+ COLUMN_DURATION + " text,"
+        + COLUMN_RESOLUTION + " text,"+ COLUMN_FRAMERATE+ " text)";
     
     
     VideoDatabaseHelper(Context context) {
@@ -36,7 +36,9 @@ public class VideoDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+    	Log.d("DATABASE-CHECK","execute");
         db.execSQL(DATABASE_CREATE);
+        Log.d("DATABASE-CHECK","execute");
     }
 
 	@Override

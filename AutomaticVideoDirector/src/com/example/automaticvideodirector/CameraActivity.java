@@ -2,14 +2,20 @@ package com.example.automaticvideodirector;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
+import com.example.automaticvideodirector.database.MetaData;
+import com.example.automaticvideodirector.database.MetaDataSource;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -20,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 /**
  * @author thilo
  * 
@@ -35,15 +42,20 @@ public class CameraActivity extends Activity {
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	
+	private static final int request =1;
+	
 	private boolean isRecording = false;
 	
 	private Camera cameraInstance;
 	private CameraPreview cameraPreview;
 	private MediaRecorder mediaRecorder;
 	
-	
-	
-	
+	private MetaDataSource datasource;
+	private MetaData metaData;
+	private MediaMetadataRetriever retriever;
+	private File handlerFile;
+	private HttpAsyncTask httpTask;
+
 	
 	
 	@Override
@@ -56,10 +68,14 @@ public class CameraActivity extends Activity {
 		cameraPreview = new CameraPreview(this, cameraInstance);
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(cameraPreview);
+        Log.d("DATABASE-CHECK","before datasource = new MetaDataSource(this)");
+        datasource = new MetaDataSource(this);
+        Log.d("DATABASE-CHECK","before datasource = new MetaDataSource(this)");
+        datasource.open();
         
         Button captureButton = (Button) findViewById(R.id.button_capture);
         captureButton.setOnClickListener(recordListener);
-        
+                
         Log.d("CameraActivity","onCreate-complete");
         
 	}
@@ -67,11 +83,33 @@ public class CameraActivity extends Activity {
 	
 	@Override
     protected void onPause() {
-        super.onPause();
+        
+        datasource.close();
         releaseMediaRecorder();       // if you are using MediaRecorder, release it first
-        releaseCamera();              // release the camera immediately on pause event
+        releaseCamera();  
+        super.onPause();				// release the camera immediately on pause event
+	}
+	
+	@Override
+    protected void onStop() {
+        
+        datasource.close();
+        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+        releaseCamera();
+        super.onPause();				// release the camera immediately on pause event
     }
 
+	@Override    
+	protected void onDestroy() {        
+	      datasource.close();
+	      releaseMediaRecorder();
+		  super.onDestroy();
+	  }
+	
+	
+	
+	
+	
     private void releaseMediaRecorder(){
         if (mediaRecorder != null) {
             mediaRecorder.reset();   // clear recorder configuration
@@ -107,7 +145,8 @@ public class CameraActivity extends Activity {
 	    mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
 	    Log.d("CameraActivity","in preparevideorecorder3");
 	    // Step 4: Set output file
-	    mediaRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
+	    handlerFile = getOutputMediaFile(MEDIA_TYPE_VIDEO);
+	    mediaRecorder.setOutputFile(handlerFile.toString());
 	    Log.d("CameraActivity","in preparevideorecorder4");
 	    
 	    // Step 5: Set the preview output
@@ -193,6 +232,24 @@ public class CameraActivity extends Activity {
 	}
 	
 	
+	
+	public MetaData getMetaDataFromFile(MediaMetadataRetriever retriever){
+		
+		MetaData data = new MetaData();
+	
+		
+		
+		data.setVideoFile(handlerFile.getName());
+		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
+		data.setDuration(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+		data.setFrameRate(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+		data.setResolution(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)+"*"+retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+
+		return data;
+		
+	}
+	
+	
 
 	/*
 	 * Button Listener 
@@ -211,6 +268,30 @@ public class CameraActivity extends Activity {
 	                //setCaptureButtonText("Capture");
 	                isRecording = false;
 	                Log.d("CameraActivity","Media recorder was already recording");
+	                
+	                
+	                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+	                Log.d("MetaDataRetriever-CHECK",Uri.fromFile(handlerFile).toString());
+	                retriever.setDataSource(CameraActivity.this, Uri.fromFile(handlerFile));
+	                
+	                metaData=getMetaDataFromFile(retriever);
+	                datasource.insertMetaData(metaData);
+	                
+	                	new HttpAsyncTask(request,getString(R.string.video_upload_url), metaData, 
+	                			new HttpAsyncTask.Callback() {
+	    					@Override
+	    					public void run(String result) {
+	    						try {
+	    							show_toast(result);
+	    						} catch (Exception e) {
+	    							show_toast("Upload of MetaData has failed");
+	    						}
+	    					}
+	    				}
+	                	).execute();
+				
+	                
+	                
 	            } else {
 	            	
 	                // initialize video camera
@@ -219,11 +300,12 @@ public class CameraActivity extends Activity {
 	                    // now you can start recording
 	                	Log.d("CameraActivity","Media recorder will be started in the next line");
 	                    mediaRecorder.start();
+	                    
 
 	                    // inform the user that recording has started
 	                    //setCaptureButtonText("Stop");
 	                    isRecording = true;
-	                    Log.d("CameraActivity","Media recorder is started");
+	                    Log.d("CameraActivity","Media recorder started");
 	                } else {
 	                    // prepare didn't work, release the camera
 	                    releaseMediaRecorder();
@@ -233,4 +315,11 @@ public class CameraActivity extends Activity {
 	            }
 	    }
 	};
+	
+	private void show_toast (String s) {
+    	Toast toast = Toast.makeText(this, s, Toast.LENGTH_LONG);
+        toast.show();
+	}
+	
+	
 }

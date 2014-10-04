@@ -12,7 +12,7 @@ public class MetaData {
 	//This class is for testing purposes, can be substituted by a file (Video + Metadata) class later??
 	private long _id;
 	private String filename;
-	private int timestamp;
+	private String timestamp;
 	private String duration;
 	private String resolution;
 	private String framerate;
@@ -32,7 +32,7 @@ public class MetaData {
 	public String getVideoFile(){
 		return this.filename;
 	}
-	public int getTimeStamp(){
+	public String getTimeStamp(){
 		return this.timestamp;
 	}
 	public String getDuration(){
@@ -56,7 +56,7 @@ public class MetaData {
 		this.filename=filename;
 	}
 	
-	public void setTimeStamp(int timestamp){
+	public void setTimeStamp(String timestamp){
 		this.timestamp=timestamp;
 	}
 	public void setDuration(String duration){
