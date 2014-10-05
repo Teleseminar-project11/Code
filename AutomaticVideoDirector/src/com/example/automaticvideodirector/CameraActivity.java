@@ -52,9 +52,7 @@ public class CameraActivity extends Activity {
 	
 	private MetaDataSource datasource;
 	private MetaData metaData;
-	private MediaMetadataRetriever retriever;
 	private File handlerFile;
-	private HttpAsyncTask httpTask;
 
 	
 	
@@ -64,39 +62,34 @@ public class CameraActivity extends Activity {
 		setContentView(R.layout.activity_camera);
 				
 		cameraInstance = getCameraInstance();
-		
 		cameraPreview = new CameraPreview(this, cameraInstance);
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(cameraPreview);
-        Log.d("DATABASE-CHECK","before datasource = new MetaDataSource(this)");
+        
         datasource = new MetaDataSource(this);
-        Log.d("DATABASE-CHECK","before datasource = new MetaDataSource(this)");
         datasource.open();
         
         Button captureButton = (Button) findViewById(R.id.button_capture);
         captureButton.setOnClickListener(recordListener);
                 
-        Log.d("CameraActivity","onCreate-complete");
         
 	}
 	
 	
 	@Override
     protected void onPause() {
-        
         datasource.close();
-        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+        releaseMediaRecorder();
         releaseCamera();  
-        super.onPause();				// release the camera immediately on pause event
+        super.onPause();
 	}
 	
 	@Override
     protected void onStop() {
-        
         datasource.close();
-        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+        releaseMediaRecorder();
         releaseCamera();
-        super.onPause();				// release the camera immediately on pause event
+        super.onPause();
     }
 
 	@Override    
@@ -106,8 +99,7 @@ public class CameraActivity extends Activity {
 		  super.onDestroy();
 	  }
 	
-	
-	
+
 	
 	
     private void releaseMediaRecorder(){
@@ -125,6 +117,19 @@ public class CameraActivity extends Activity {
         	cameraInstance = null;
         }
     }
+	
+    
+    /** A safe way to get an instance of the Camera object. */
+	public static Camera getCameraInstance(){
+	    Camera c = null;
+	    try {
+	        c = Camera.open(); // attempt to get a Camera instance
+	    }
+	    catch (Exception e){
+	    	// Camera is not available (in use or does not exist)
+	    }
+	    return c; // returns null if camera is unavailable
+	}
 	
 	
 	
@@ -165,32 +170,11 @@ public class CameraActivity extends Activity {
 	        releaseMediaRecorder();
 	        return false;
 	    }
-	    Log.d("CameraActivity","MediaRecorder-prepared");
 	    return true;
 	}
 	
 	
-	
-	
-	/** A safe way to get an instance of the Camera object. */
-	public static Camera getCameraInstance(){
-	    Camera c = null;
-	    try {
-	        c = Camera.open(); // attempt to get a Camera instance
-	    }
-	    catch (Exception e){
-	        
-	    	
-	    	
-	    	// Camera is not available (in use or does not exist)
-	    }
-	    return c; // returns null if camera is unavailable
-	}
-	
-	
-	
-	
-	
+
 	/** Create a file Uri for saving an image or video */
 	private static Uri getOutputMediaFileUri(int type){
 	      return Uri.fromFile(getOutputMediaFile(type));
@@ -214,7 +198,6 @@ public class CameraActivity extends Activity {
 	            return null;
 	        }
 	    }
-
 	    // Create a media file name
 	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 	    File mediaFile;
@@ -227,24 +210,18 @@ public class CameraActivity extends Activity {
 	    } else {
 	        return null;
 	    }
-	    
 	    return mediaFile;
 	}
 	
 	
 	
 	public MetaData getMetaDataFromFile(MediaMetadataRetriever retriever){
-		
 		MetaData data = new MetaData();
-	
-		
-		
 		data.setVideoFile(handlerFile.getName());
 		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
 		data.setDuration(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
 		data.setFrameRate(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
 		data.setResolution(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)+"*"+retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-
 		return data;
 		
 	}
@@ -269,7 +246,6 @@ public class CameraActivity extends Activity {
 	                isRecording = false;
 	                Log.d("CameraActivity","Media recorder was already recording");
 	                
-	                
 	                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 	                Log.d("MetaDataRetriever-CHECK",Uri.fromFile(handlerFile).toString());
 	                retriever.setDataSource(CameraActivity.this, Uri.fromFile(handlerFile));
@@ -278,17 +254,16 @@ public class CameraActivity extends Activity {
 	                datasource.insertMetaData(metaData);
 	                
 	                	new HttpAsyncTask(request,getString(R.string.video_upload_url), metaData, 
-	                			new HttpAsyncTask.Callback() {
-	    					@Override
-	    					public void run(String result) {
-	    						try {
-	    							show_toast(result);
-	    						} catch (Exception e) {
-	    							show_toast("Upload of MetaData has failed");
-	    						}
-	    					}
-	    				}
-	                	).execute();
+	                		new HttpAsyncTask.Callback() {
+		    					@Override
+		    					public void run(String result) {
+		    						try {
+		    							show_toast(result);
+		    						} catch (Exception e) {
+		    							show_toast("Upload of MetaData has failed");
+		    						}
+		    				}
+	    				}).execute();
 				
 	                
 	                

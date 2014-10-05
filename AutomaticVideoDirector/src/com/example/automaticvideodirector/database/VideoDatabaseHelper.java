@@ -17,6 +17,8 @@ public class VideoDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DURATION = "duration";
     public static final String COLUMN_RESOLUTION = "resolution";
     public static final String COLUMN_FRAMERATE = "framerate";
+    public static final String COLUMN_SERVERID = "serverId";
+    public static final String COLUMN_STATUS = "status";
     
 
     
@@ -26,7 +28,7 @@ public class VideoDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_CREATE = "create table "
         + TABLE_METADATA + "(" + COLUMN_ID + " integer primary key autoincrement, "
         + COLUMN_FILENAME + " text,"+ COLUMN_TIMESTAMP + " text,"+ COLUMN_DURATION + " text,"
-        + COLUMN_RESOLUTION + " text,"+ COLUMN_FRAMERATE+ " text)";
+        + COLUMN_RESOLUTION + " text,"+ COLUMN_FRAMERATE+ " text,"+ COLUMN_SERVERID+" integer,"+ COLUMN_STATUS+" text)";
     
     
     VideoDatabaseHelper(Context context) {

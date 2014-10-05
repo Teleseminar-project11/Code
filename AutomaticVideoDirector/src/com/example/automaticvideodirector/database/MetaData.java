@@ -17,13 +17,8 @@ public class MetaData {
 	private String resolution;
 	private String framerate;
 	private String status;
+	private long serverId;
 	
-	/*public MetaData(long phoneId, String videoFile, String someVideoData){
-		this._id = phoneId;
-		this.videoFile = videoFile;
-		this.someVideoData = someVideoData;
-	}
-	*/
 	
 	//GETTER
 	public long getId(){
@@ -47,6 +42,9 @@ public class MetaData {
 	public String getStatus(){
 		return this.status;
 	}
+	public long getServerId(){
+		return this.serverId;
+	}
 	
 	//SETTER
 	public void setId(long id){
@@ -55,7 +53,6 @@ public class MetaData {
 	public void setVideoFile(String filename){
 		this.filename=filename;
 	}
-	
 	public void setTimeStamp(String timestamp){
 		this.timestamp=timestamp;
 	}
@@ -70,6 +67,9 @@ public class MetaData {
 	}
 	public void setStatus(String status){
 		this.status=status;
+	}
+	public void setServerId(long serverId){
+		this.serverId = serverId;
 	}
 	
 

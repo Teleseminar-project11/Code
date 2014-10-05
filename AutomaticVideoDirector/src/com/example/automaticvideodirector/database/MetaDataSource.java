@@ -18,7 +18,9 @@ public class MetaDataSource {
 									VideoDatabaseHelper.COLUMN_TIMESTAMP, 
 									VideoDatabaseHelper.COLUMN_DURATION, 
 									VideoDatabaseHelper.COLUMN_RESOLUTION, 
-									VideoDatabaseHelper.COLUMN_FRAMERATE,      };
+									VideoDatabaseHelper.COLUMN_FRAMERATE,
+									VideoDatabaseHelper.COLUMN_SERVERID,
+									VideoDatabaseHelper.COLUMN_STATUS		};
 	
 	public MetaDataSource(Context context) {
 		Log.d("DATABASE-CHECK","before dbHelper = new....");
@@ -43,20 +45,23 @@ public class MetaDataSource {
 	    values.put(VideoDatabaseHelper.COLUMN_DURATION, data.getDuration());
 	    values.put(VideoDatabaseHelper.COLUMN_RESOLUTION, data.getResolution());
 	    values.put(VideoDatabaseHelper.COLUMN_FRAMERATE, data.getFrameRate());
+	    values.put(VideoDatabaseHelper.COLUMN_SERVERID, 1);
+	    values.put(VideoDatabaseHelper.COLUMN_STATUS, "false");
+	    
 	    Log.d("DATABASE-CHECK","before status");
 	 
 
 	    long insertId= database.insert(VideoDatabaseHelper.TABLE_METADATA, null, values);
-	    Cursor cursor = database.query(VideoDatabaseHelper.TABLE_METADATA,
-	            allColumns, VideoDatabaseHelper.COLUMN_ID + " = " + insertId, null,
-	            null, null, null);
+	    Cursor cursor = database.query(VideoDatabaseHelper.TABLE_METADATA, allColumns, VideoDatabaseHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
 	        cursor.moveToFirst();
 	        Log.d("INSERT CHECK", "ID:"+cursor.getLong(0));
 	        Log.d("INSERT CHECK", "Filename:"+cursor.getString(1));
-	        Log.d("INSERT CHECK", "Timestamp:"+cursor.getInt(2));
-	        Log.d("INSERT CHECK", "Duration:"+cursor.getInt(3));
+	        Log.d("INSERT CHECK", "Timestamp:"+cursor.getString(2));
+	        Log.d("INSERT CHECK", "Duration:"+cursor.getString(3));
 	        Log.d("INSERT CHECK", "resolution:"+cursor.getString(4));
-	        Log.d("INSERT CHECK", "framerate:"+cursor.getInt(5));
+	        Log.d("INSERT CHECK", "framerate:"+cursor.getString(5));
+	        Log.d("INSERT CHECK", "serverId:"+cursor.getInt(6));
+	        Log.d("INSERT CHECK", "status:"+cursor.getString(7));
 	        cursor.close();
 	    Log.d("DATABASE-CHECK","after status");
 
@@ -64,8 +69,8 @@ public class MetaDataSource {
 	
 	
 	//Gets the metadata of a specific requested videofile.--->Check status if a videofile is available on this device and hasn't been uploaded yes(Column_STATUS)
-	public MetaData selectMetaData(String filename){
-		String selectQuery = "SELECT  * FROM " + VideoDatabaseHelper.TABLE_METADATA +"WHERE"+VideoDatabaseHelper.COLUMN_FILENAME+"="+filename;
+	public MetaData selectMetaData(Integer serverId){
+		String selectQuery = "SELECT  * FROM " + VideoDatabaseHelper.TABLE_METADATA +"WHERE"+VideoDatabaseHelper.COLUMN_SERVERID+"="+serverId;
 		Cursor cursor = database.rawQuery(selectQuery, null);
 		MetaData newMetaData=new MetaData();
 		if (cursor!=null) {
@@ -75,9 +80,15 @@ public class MetaDataSource {
 	        	newMetaData.setDuration(cursor.getString(3));
 	        	newMetaData.setResolution(cursor.getString(4));
 	        	newMetaData.setFrameRate(cursor.getString(5));
+	        	newMetaData.setServerId(cursor.getInt(6));
+	        	newMetaData.setStatus(cursor.getString(7));
 	        }
 		return newMetaData;
 	}
+	
+	
+	//UPDATE DB
+	//	....
 	
 
 }
