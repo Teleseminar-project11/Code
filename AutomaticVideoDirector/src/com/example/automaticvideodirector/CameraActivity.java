@@ -219,8 +219,8 @@ public class CameraActivity extends Activity {
 		MetaData data = new MetaData();
 		data.setVideoFile(handlerFile.getName());
 		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
-		data.setDuration(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-		data.setFrameRate(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+		data.setDuration(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
+		data.setFrameRate(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)));
 		data.setResolution(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)+"*"+retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
 		return data;
 		
@@ -229,7 +229,7 @@ public class CameraActivity extends Activity {
 	
 
 	/*
-	 * Button Listener 
+	 * Listener 
 	 */
 	OnClickListener recordListener = new OnClickListener() {
 		
@@ -253,7 +253,7 @@ public class CameraActivity extends Activity {
 	                metaData=getMetaDataFromFile(retriever);
 	                datasource.insertMetaData(metaData);
 	                
-	                	new HttpAsyncTask(request,getString(R.string.video_upload_url), metaData, 
+	                	new HttpAsyncTask(HttpAsyncTask.HTTP_POST,getString(R.string.video_upload_url), metaData, 
 	                		new HttpAsyncTask.Callback() {
 		    					@Override
 		    					public void run(String result) {
@@ -264,7 +264,15 @@ public class CameraActivity extends Activity {
 		    						}
 		    				}
 	    				}).execute();
-				
+	                	
+	                	MediaScannerConnection.scanFile(CameraActivity.this,
+	                	          new String[] { handlerFile.toString() }, null,
+	                	          new MediaScannerConnection.OnScanCompletedListener() {
+	                	      public void onScanCompleted(String path, Uri uri) {
+	                	          Log.i("ExternalStorage", "Scanned " + path + ":");
+	                	          Log.i("ExternalStorage", "-> uri=" + uri);
+	                	      }
+	                	 });
 	                
 	                
 	            } else {

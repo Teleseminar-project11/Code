@@ -13,9 +13,9 @@ public class MetaData {
 	private long _id;
 	private String filename;
 	private String timestamp;
-	private String duration;
+	private int duration;
 	private String resolution;
-	private String framerate;
+	private int framerate;
 	private String status;
 	private long serverId;
 	
@@ -30,13 +30,13 @@ public class MetaData {
 	public String getTimeStamp(){
 		return this.timestamp;
 	}
-	public String getDuration(){
+	public int getDuration(){
 		return this.duration;
 	}
 	public String getResolution(){
 		return this.resolution;
 	}
-	public String getFrameRate(){
+	public int getFrameRate(){
 		return this.framerate;
 	}
 	public String getStatus(){
@@ -56,13 +56,13 @@ public class MetaData {
 	public void setTimeStamp(String timestamp){
 		this.timestamp=timestamp;
 	}
-	public void setDuration(String duration){
+	public void setDuration(int duration){
 		this.duration=duration;
 	}
 	public void setResolution(String resolution){
 		this.resolution=resolution;
 	}
-	public void setFrameRate(String framerate){
+	public void setFrameRate(int framerate){
 		this.framerate=framerate;
 	}
 	public void setStatus(String status){

@@ -27,8 +27,8 @@ public class VideoDatabaseHelper extends SQLiteOpenHelper {
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
         + TABLE_METADATA + "(" + COLUMN_ID + " integer primary key autoincrement, "
-        + COLUMN_FILENAME + " text,"+ COLUMN_TIMESTAMP + " text,"+ COLUMN_DURATION + " text,"
-        + COLUMN_RESOLUTION + " text,"+ COLUMN_FRAMERATE+ " text,"+ COLUMN_SERVERID+" integer,"+ COLUMN_STATUS+" text)";
+        + COLUMN_FILENAME + " text,"+ COLUMN_TIMESTAMP + " text,"+ COLUMN_DURATION + " integer,"
+        + COLUMN_RESOLUTION + " text,"+ COLUMN_FRAMERATE+ " integer,"+ COLUMN_SERVERID+" integer,"+ COLUMN_STATUS+" text)";
     
     
     VideoDatabaseHelper(Context context) {
