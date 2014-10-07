@@ -10,7 +10,9 @@ import android.util.Log;
 
 public class MetaDataSource {
 	
-
+	
+	private static final String DEBUG_TAG ="MetaDataSource";
+	
 	private SQLiteDatabase database;
 	private VideoDatabaseHelper dbHelper;
 	private String[] allColumns = {	VideoDatabaseHelper.COLUMN_ID, 
@@ -23,53 +25,49 @@ public class MetaDataSource {
 									VideoDatabaseHelper.COLUMN_STATUS		};
 	
 	public MetaDataSource(Context context) {
-		Log.d("DATABASE-CHECK","before dbHelper = new....");
 	    dbHelper = new VideoDatabaseHelper(context);
 	}
 	
 	public void open() throws SQLException {
-		Log.d("DATABASE-CHECK","before dbHelper.getWriteable....");
 	    database = dbHelper.getWritableDatabase();
 	}
 	
 	public void close() {
 	    dbHelper.close();
+	    database.close();
 	}
 	
-	//AFTER A VIDEOFILE IS CREATED NEW METADATA WILL BE INSERTED TO THE DATABASE AND HAS TO BE SEND VIA HTTP_POST TO THE SERVER
-	public void insertMetaData(MetaData data) {
-	    ContentValues values = new ContentValues();
-	    
+	//AFTER A VIDEOFILE IS CREATED, NEW METADATA WILL BE INSERTED TO THE DATABASE AND HAS TO BE SEND VIA HTTP_POST TO THE SERVER
+	public long insertMetaData(MetaData data) {
+		Log.i(DEBUG_TAG,"INSERT METADATA IN TABLE");
+	    ContentValues values = new ContentValues(); 
 	    values.put(VideoDatabaseHelper.COLUMN_FILENAME, data.getVideoFile());
 	    values.put(VideoDatabaseHelper.COLUMN_TIMESTAMP, data.getTimeStamp());
 	    values.put(VideoDatabaseHelper.COLUMN_DURATION, data.getDuration());
 	    values.put(VideoDatabaseHelper.COLUMN_RESOLUTION, data.getResolution());
 	    values.put(VideoDatabaseHelper.COLUMN_FRAMERATE, data.getFrameRate());
-	    values.put(VideoDatabaseHelper.COLUMN_SERVERID, 1);
+	    values.put(VideoDatabaseHelper.COLUMN_SERVERID, 0);
 	    values.put(VideoDatabaseHelper.COLUMN_STATUS, "false");
-	    
-	    Log.d("DATABASE-CHECK","before status");
-	 
-
+ 
 	    long insertId= database.insert(VideoDatabaseHelper.TABLE_METADATA, null, values);
 	    Cursor cursor = database.query(VideoDatabaseHelper.TABLE_METADATA, allColumns, VideoDatabaseHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
 	        cursor.moveToFirst();
-	        Log.d("INSERT CHECK", "ID:"+cursor.getLong(0));
-	        Log.d("INSERT CHECK", "Filename:"+cursor.getString(1));
-	        Log.d("INSERT CHECK", "Timestamp:"+cursor.getString(2));
-	        Log.d("INSERT CHECK", "Duration:"+cursor.getInt(3));
-	        Log.d("INSERT CHECK", "resolution:"+cursor.getString(4));
-	        Log.d("INSERT CHECK", "framerate:"+cursor.getInt(5));
-	        Log.d("INSERT CHECK", "serverId:"+cursor.getLong(6));
-	        Log.d("INSERT CHECK", "status:"+cursor.getString(7));
+	        Log.d(DEBUG_TAG, "ID:"+cursor.getLong(0));
+	        Log.d(DEBUG_TAG, "Filename:"+cursor.getString(1));
+	        Log.d(DEBUG_TAG, "Timestamp:"+cursor.getString(2));
+	        Log.d(DEBUG_TAG, "Duration:"+cursor.getInt(3));
+	        Log.d(DEBUG_TAG, "resolution:"+cursor.getString(4));
+	        Log.d(DEBUG_TAG, "framerate:"+cursor.getInt(5));
+	        Log.d(DEBUG_TAG, "serverId:"+cursor.getLong(6));
+	        Log.d(DEBUG_TAG, "status:"+cursor.getString(7));
 	        cursor.close();
-	    Log.d("DATABASE-CHECK","after status");
-
+	    return insertId;
 	}
 	
 	
-	//Gets the metadata of a specific requested videofile.--->Check status if a videofile is available on this device and hasn't been uploaded true vs. false(Column_STATUS)
+	//GETS THE METADATA OF A SPECIFIC REQUESTED VIDEOFILE.--->PARAMETERS: SERVERID,  RETURN:VIDEOFILE RELATED METADATA
 	public MetaData selectMetaData(Integer serverId){
+		
 		String selectQuery = "SELECT  * FROM " + VideoDatabaseHelper.TABLE_METADATA +"WHERE"+VideoDatabaseHelper.COLUMN_SERVERID+"="+serverId;
 		Cursor cursor = database.rawQuery(selectQuery, null);
 		MetaData newMetaData=new MetaData();
@@ -83,12 +81,26 @@ public class MetaDataSource {
 	        	newMetaData.setServerId(cursor.getLong(6));
 	        	newMetaData.setStatus(cursor.getString(7));
 	        }
+		cursor.close();
 		return newMetaData;
 	}
 	
 	
 	//UPDATE DB
-	//	....
+	public void updateServerId(int serverID, String filename){
+		ContentValues values = new ContentValues();	
+		values.put(VideoDatabaseHelper.COLUMN_SERVERID, serverID);
+		Log.d("DATABASEUPDATE",filename);
+		Log.d("DATABASEUPDATE",VideoDatabaseHelper.COLUMN_FILENAME);
+		long d = database.update(VideoDatabaseHelper.TABLE_METADATA, values, VideoDatabaseHelper.COLUMN_FILENAME+"='"+filename+"'",null);
+		Log.d("DATABASEUPDATE", String.valueOf(d));
+	}
+	
+	public void updateStatus(String filename){
+		ContentValues values = new ContentValues();	
+		values.put(VideoDatabaseHelper.COLUMN_STATUS, "true");
+		database.update(VideoDatabaseHelper.TABLE_METADATA, values, VideoDatabaseHelper.COLUMN_FILENAME+"='"+filename+"'",null);
+	}
 	
 
 }

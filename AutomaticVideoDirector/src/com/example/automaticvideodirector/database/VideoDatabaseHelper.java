@@ -6,6 +6,8 @@ import android.util.Log;
 
 public class VideoDatabaseHelper extends SQLiteOpenHelper {
 	
+	private static final String DEBUG_TAG = "VideoDatabaseHelper";
+	
     private static final String DATABASE_NAME = "metadata.db";
     private static final int DATABASE_VERSION = 1;
     
@@ -38,9 +40,8 @@ public class VideoDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-    	Log.d("DATABASE-CHECK","execute");
         db.execSQL(DATABASE_CREATE);
-        Log.d("DATABASE-CHECK","execute");
+        Log.i(DEBUG_TAG,"DATABASE SUCCESFULLY CREATED");
     }
 
 	@Override

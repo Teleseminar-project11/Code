@@ -69,7 +69,6 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 				}
 			} 
 			case HTTP_POST: {
-				Log.d(DEBUG_TAG, "before postData is called");
 				try{
 					return httpPost(url, data);
 				}
@@ -96,7 +95,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 		if (result == null) {
 			Log.d(DEBUG_TAG, "Error");
 		} else {
-			Log.d(DEBUG_TAG, result);
+			Log.d(DEBUG_TAG, result+" - yoyo");
 		}
 		if (callback != null) {
 			callback.run(result);
@@ -111,46 +110,43 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
         String response = "";
         
     	URL url = new URL(myurl);
-    	Log.d(DEBUG_TAG, "before URL connection instance");
     	HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-    	Log.d(DEBUG_TAG, "after URL connection instance");
     	   try {
     	    urlConnection.setDoOutput(true);
     	    urlConnection.setRequestMethod("POST");  
     	    urlConnection.setChunkedStreamingMode(0);
-    	    urlConnection.setRequestProperty("Content-Type","application/json"); 
+    	    urlConnection.setRequestProperty("Content-Type","application/json");
+    	    urlConnection.connect();
     	    
-    	    //Create JSONObject
+    	    //Creation - JSONObject
     	    JSONObject jsonParam = new JSONObject();
-    	    
     	    try {
-				jsonParam.put("filename", data.getVideoFile());
-				jsonParam.put("timestamp", data.getTimeStamp());
-				jsonParam.put("duration", data.getDuration());
-				jsonParam.put("resolution", data.getResolution());
-				jsonParam.put("framerate", data.getFrameRate());
+				jsonParam.put("name", data.getVideoFile());
+//				jsonParam.put("timestamp", data.getTimeStamp());
+//				jsonParam.put("duration", data.getDuration());
+//				jsonParam.put("resolution", data.getResolution());
+//				jsonParam.put("framerate", data.getFrameRate());
 				Log.d(DEBUG_TAG, jsonParam.toString());
 			} catch (JSONException e) {
 				Log.d(DEBUG_TAG, "JSON wrong");
 				e.printStackTrace();
 			}
     	    
-    	    //POST request
-    	    OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-    	    out.write(jsonParam.toString().getBytes());
-    	    out.flush();
+    	    //POST REQUEST
+    	    OutputStream output = new BufferedOutputStream(urlConnection.getOutputStream());
+    	    output.write(jsonParam.toString().getBytes());
+    	    output.flush();
     	    
-    	    //POST response
+    	    //POST RESPONSE
     	    StringBuilder sb = new StringBuilder();  
     	    int httpResult = urlConnection.getResponseCode();
-
+    	    Log.d(DEBUG_TAG,"httpResult: "+httpResult);
     	    if(httpResult == HttpURLConnection.HTTP_OK){
     	    	BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"utf-8")); 
-    	        
     	        while ((response = br.readLine()) != null) {  
     	        	sb.append(response + "\n");  
     	        }  
-    	        br.close();  
+    	        br.close();
     	        Log.d(DEBUG_TAG, sb.toString());
     	        response = sb.toString();
     	    } 
@@ -162,7 +158,8 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
     	   }
     	   return response;
         }
-
+	
+	
 	public String httpGet(String myurl) throws IOException {
 		URL url = new URL(myurl);
 		HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

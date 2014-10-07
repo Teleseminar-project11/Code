@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.json.JSONObject;
+
 import com.example.automaticvideodirector.database.MetaData;
 import com.example.automaticvideodirector.database.MetaDataSource;
 
@@ -33,16 +35,15 @@ import android.widget.Toast;
  * This activity is responsible to record a video (of max. 20sec???). 
  * After creating the mediafile, a connection to the database has to be established to insert all the necessary meta-information.-->MetaDatSource.insertMetaData();
  * Additionally a HTTPURLCONNECTION has to be created to POST the metadata via JSON to the server--> new HttpAsnycTask("POST",MetaData metaData);
- * Last but not least information to user if successful or not.
+ * Last but not least information to user, if successful or not.
  * 
  */
 public class CameraActivity extends Activity {
 	
+	private static final String DEBUG_TAG = "CameraActivity";
 	
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
-	
-	private static final int request =1;
 	
 	private boolean isRecording = false;
 	
@@ -66,6 +67,7 @@ public class CameraActivity extends Activity {
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(cameraPreview);
         
+        //CONNECTION TO DATABASE ESTABLISHED
         datasource = new MetaDataSource(this);
         datasource.open();
         
@@ -96,24 +98,22 @@ public class CameraActivity extends Activity {
 	protected void onDestroy() {        
 	      datasource.close();
 	      releaseMediaRecorder();
+	      releaseCamera();
 		  super.onDestroy();
 	  }
 	
 
-	
-	
     private void releaseMediaRecorder(){
         if (mediaRecorder != null) {
-            mediaRecorder.reset();   // clear recorder configuration
-            mediaRecorder.release(); // release the recorder object
+            mediaRecorder.reset();
+            mediaRecorder.release(); // release the media recorder object
             mediaRecorder = null;
-            cameraInstance.lock();           // lock camera for later use
         }
     }
 
     private void releaseCamera(){
         if (cameraInstance != null){
-        	cameraInstance.release();        // release the camera for other applications
+        	cameraInstance.release();// release the camera for other applications
         	cameraInstance = null;
         }
     }
@@ -134,39 +134,32 @@ public class CameraActivity extends Activity {
 	
 	
 	private boolean prepareVideoRecorder(Camera camera){
-		Log.d("CameraActivity","in preparevideorecorder");
+		Log.i(DEBUG_TAG,"prepareVideoRecorder()");
 	    cameraInstance = camera;
 	    mediaRecorder = new MediaRecorder();
 
 	    // Step 1: Unlock and set camera to MediaRecorder
 	    cameraInstance.unlock();
 	    mediaRecorder.setCamera(cameraInstance);
-	    Log.d("CameraActivity","in preparevideorecorder2");
 	    // Step 2: Set sources
 	    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 	    mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
 	    // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
 	    mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
-	    Log.d("CameraActivity","in preparevideorecorder3");
 	    // Step 4: Set output file
 	    handlerFile = getOutputMediaFile(MEDIA_TYPE_VIDEO);
 	    mediaRecorder.setOutputFile(handlerFile.toString());
-	    Log.d("CameraActivity","in preparevideorecorder4");
-	    
 	    // Step 5: Set the preview output
 	    mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
-	    
-
 	    // Step 6: Prepare configured MediaRecorder
 	    try {
 	    	mediaRecorder.prepare();
 	    } catch (IllegalStateException e) {
-	        Log.d("CameraActivity", "IllegalStateException preparing MediaRecorder: " + e.getMessage());
+	        Log.d(DEBUG_TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
 	        releaseMediaRecorder();
 	        return false;
 	    } catch (IOException e) {
-	        Log.d("CameraActivity", "IOException preparing MediaRecorder: " + e.getMessage());
+	        Log.d(DEBUG_TAG, "IOException preparing MediaRecorder: " + e.getMessage());
 	        releaseMediaRecorder();
 	        return false;
 	    }
@@ -186,7 +179,7 @@ public class CameraActivity extends Activity {
 	    // using Environment.getExternalStorageState() before doing this!!!!!!!!!!!!!!.
 		Log.d("CameraActivity","in getOutputMediaFile1");
 	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-	              Environment.DIRECTORY_PICTURES), "MyCameraApp");
+	              Environment.DIRECTORY_PICTURES), "Automatic Video Director");
 	    // This location works best if we want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 	    Log.d("CameraActivity",mediaStorageDir.getPath());
@@ -215,16 +208,7 @@ public class CameraActivity extends Activity {
 	
 	
 	
-	public MetaData getMetaDataFromFile(MediaMetadataRetriever retriever){
-		MetaData data = new MetaData();
-		data.setVideoFile(handlerFile.getName());
-		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
-		data.setDuration(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
-		data.setFrameRate(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)));
-		data.setResolution(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)+"*"+retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-		return data;
-		
-	}
+
 	
 	
 
@@ -244,35 +228,41 @@ public class CameraActivity extends Activity {
 	                // inform the user that recording has stopped
 	                //setCaptureButtonText("Capture");
 	                isRecording = false;
-	                Log.d("CameraActivity","Media recorder was already recording");
+	                Log.i(DEBUG_TAG,"Media recorder was already recording");
 	                
 	                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-	                Log.d("MetaDataRetriever-CHECK",Uri.fromFile(handlerFile).toString());
+	                Log.d(DEBUG_TAG,Uri.fromFile(handlerFile).toString());
 	                retriever.setDataSource(CameraActivity.this, Uri.fromFile(handlerFile));
 	                
 	                metaData=getMetaDataFromFile(retriever);
-	                datasource.insertMetaData(metaData);
+	                long insertId = datasource.insertMetaData(metaData);
+	                Log.d(DEBUG_TAG,"New row in table: ID=" +insertId);
 	                
-	                	new HttpAsyncTask(HttpAsyncTask.HTTP_POST,getString(R.string.video_upload_url), metaData, 
-	                		new HttpAsyncTask.Callback() {
-		    					@Override
-		    					public void run(String result) {
-		    						try {
-		    							show_toast(result);
-		    						} catch (Exception e) {
-		    							show_toast("Upload of MetaData has failed");
-		    						}
-		    				}
-	    				}).execute();
-	                	
-	                	MediaScannerConnection.scanFile(CameraActivity.this,
-	                	          new String[] { handlerFile.toString() }, null,
-	                	          new MediaScannerConnection.OnScanCompletedListener() {
-	                	      public void onScanCompleted(String path, Uri uri) {
-	                	          Log.i("ExternalStorage", "Scanned " + path + ":");
-	                	          Log.i("ExternalStorage", "-> uri=" + uri);
-	                	      }
-	                	 });
+                	new HttpAsyncTask(HttpAsyncTask.HTTP_POST,getString(R.string.video_upload_url), metaData, 
+                		new HttpAsyncTask.Callback() {
+	    					@Override
+	    					public void run(String result) {
+	    						try {   
+	    							//UPDATE DATABASE WITH SERVERID...
+	    							JSONObject json = new JSONObject(result);
+	    							int serverID = json.getInt("id");
+	    							String name = json.getString("name");
+	    							datasource.updateServerId(serverID, name);
+	    							show_toast("Metadata was succefully send to the server. "+name +" has new server-ID: "+ serverID);	
+	    						} catch (Exception e) {
+	    							show_toast("Upload of MetaData has failed");
+	    						}
+	    					}
+    				}).execute();
+	                //Scans the external directory to add the media file immediately after creating
+                	MediaScannerConnection.scanFile(CameraActivity.this,
+                	          new String[] { handlerFile.toString() }, null,
+                	          new MediaScannerConnection.OnScanCompletedListener() {
+                	      public void onScanCompleted(String path, Uri uri) {
+                	          Log.i("ExternalStorage", "Scanned " + path + ":");
+                	          Log.i("ExternalStorage", "-> uri=" + uri);
+                	      }
+                	});
 	                
 	                
 	            } else {
@@ -281,23 +271,34 @@ public class CameraActivity extends Activity {
 	                if (prepareVideoRecorder(cameraInstance)) {
 	                    // Camera is available and unlocked, MediaRecorder is prepared,
 	                    // now you can start recording
-	                	Log.d("CameraActivity","Media recorder will be started in the next line");
+	                	Log.i("CameraActivity","Media recorder will be started in the next line");
 	                    mediaRecorder.start();
-	                    
-
 	                    // inform the user that recording has started
 	                    //setCaptureButtonText("Stop");
 	                    isRecording = true;
-	                    Log.d("CameraActivity","Media recorder started");
+	                    Log.i("CameraActivity","Media recorder started");
 	                } else {
 	                    // prepare didn't work, release the camera
 	                    releaseMediaRecorder();
-	                    Log.d("CameraActivity","prepare didn't work, release the camera");
+	                    Log.i("CameraActivity","prepareVideoRecorder() didn't work");
 	                    // inform user
 	                }
 	            }
 	    }
 	};
+	
+	
+	public MetaData getMetaDataFromFile(MediaMetadataRetriever retriever){
+		Log.i(DEBUG_TAG, "Retrieve meta data from mediafile");
+		MetaData data = new MetaData();
+		data.setVideoFile(handlerFile.getName());
+		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
+		data.setDuration(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
+		data.setFrameRate(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)));
+		data.setResolution(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)+"*"+retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+		return data;
+		
+	}
 	
 	private void show_toast (String s) {
     	Toast toast = Toast.makeText(this, s, Toast.LENGTH_LONG);
