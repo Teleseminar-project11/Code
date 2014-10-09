@@ -15,7 +15,7 @@ public class MetaData {
 	private String timestamp;
 	private int duration;
 	private String resolution;
-	private int framerate;
+	private int shaking;
 	private String status;
 	private long serverId;
 	
@@ -36,8 +36,8 @@ public class MetaData {
 	public String getResolution(){
 		return this.resolution;
 	}
-	public int getFrameRate(){
-		return this.framerate;
+	public int getShaking(){
+		return this.shaking;
 	}
 	public String getStatus(){
 		return this.status;
@@ -62,8 +62,8 @@ public class MetaData {
 	public void setResolution(String resolution){
 		this.resolution=resolution;
 	}
-	public void setFrameRate(int framerate){
-		this.framerate=framerate;
+	public void setShaking(int shaking){
+		this.shaking=shaking;
 	}
 	public void setStatus(String status){
 		this.status=status;

@@ -20,7 +20,7 @@ public class MetaDataSource {
 									VideoDatabaseHelper.COLUMN_TIMESTAMP, 
 									VideoDatabaseHelper.COLUMN_DURATION, 
 									VideoDatabaseHelper.COLUMN_RESOLUTION, 
-									VideoDatabaseHelper.COLUMN_FRAMERATE,
+									VideoDatabaseHelper.COLUMN_SHAKING,
 									VideoDatabaseHelper.COLUMN_SERVERID,
 									VideoDatabaseHelper.COLUMN_STATUS		};
 	
@@ -45,7 +45,7 @@ public class MetaDataSource {
 	    values.put(VideoDatabaseHelper.COLUMN_TIMESTAMP, data.getTimeStamp());
 	    values.put(VideoDatabaseHelper.COLUMN_DURATION, data.getDuration());
 	    values.put(VideoDatabaseHelper.COLUMN_RESOLUTION, data.getResolution());
-	    values.put(VideoDatabaseHelper.COLUMN_FRAMERATE, data.getFrameRate());
+	    values.put(VideoDatabaseHelper.COLUMN_SHAKING, data.getShaking());
 	    values.put(VideoDatabaseHelper.COLUMN_SERVERID, 0);
 	    values.put(VideoDatabaseHelper.COLUMN_STATUS, "false");
  
@@ -57,7 +57,7 @@ public class MetaDataSource {
 	        Log.d(DEBUG_TAG, "Timestamp:"+cursor.getString(2));
 	        Log.d(DEBUG_TAG, "Duration:"+cursor.getInt(3));
 	        Log.d(DEBUG_TAG, "resolution:"+cursor.getString(4));
-	        Log.d(DEBUG_TAG, "framerate:"+cursor.getInt(5));
+	        Log.d(DEBUG_TAG, "shaking:"+cursor.getInt(5));
 	        Log.d(DEBUG_TAG, "serverId:"+cursor.getLong(6));
 	        Log.d(DEBUG_TAG, "status:"+cursor.getString(7));
 	        cursor.close();
@@ -77,7 +77,7 @@ public class MetaDataSource {
 	        	newMetaData.setTimeStamp(cursor.getString(2));
 	        	newMetaData.setDuration(cursor.getInt(3));
 	        	newMetaData.setResolution(cursor.getString(4));
-	        	newMetaData.setFrameRate(cursor.getInt(5));
+	        	newMetaData.setShaking(cursor.getInt(5));
 	        	newMetaData.setServerId(cursor.getLong(6));
 	        	newMetaData.setStatus(cursor.getString(7));
 	        }

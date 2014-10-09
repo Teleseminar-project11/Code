@@ -6,6 +6,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.json.JSONObject;
 
@@ -16,6 +18,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
+import android.hardware.SensorManager;
 import android.media.CamcorderProfile;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaRecorder;
@@ -38,7 +41,7 @@ import android.widget.Toast;
  * Last but not least information to user, if successful or not.
  * 
  */
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity implements Observer {
 	
 	private static final String DEBUG_TAG = "CameraActivity";
 	
@@ -54,6 +57,10 @@ public class CameraActivity extends Activity {
 	private MetaDataSource datasource;
 	private MetaData metaData;
 	private File handlerFile;
+	
+	private ShakeDetection shakeDetector;
+	private SensorManager sensorManager;
+	private int counter;
 
 	
 	
@@ -61,19 +68,25 @@ public class CameraActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera);
-				
+		
+		//CAMERA PREVIEW
 		cameraInstance = getCameraInstance();
 		cameraPreview = new CameraPreview(this, cameraInstance);
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(cameraPreview);
         
-        //CONNECTION TO DATABASE ESTABLISHED
+        //ESTABLISH CONNECTION TO DATABASE 
         datasource = new MetaDataSource(this);
         datasource.open();
         
         Button captureButton = (Button) findViewById(R.id.button_capture);
         captureButton.setOnClickListener(recordListener);
-                
+        
+        //SENSOR MANAGER
+        counter=0;
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        shakeDetector = new ShakeDetection(sensorManager);
+        shakeDetector.addObserver(CameraActivity.this);
         
 	}
 	
@@ -82,7 +95,9 @@ public class CameraActivity extends Activity {
     protected void onPause() {
         datasource.close();
         releaseMediaRecorder();
-        releaseCamera();  
+        releaseCamera();
+        counter=0;
+        shakeDetector.deleteObservers();
         super.onPause();
 	}
 	
@@ -91,6 +106,8 @@ public class CameraActivity extends Activity {
         datasource.close();
         releaseMediaRecorder();
         releaseCamera();
+        counter=0;
+        shakeDetector.deleteObservers();
         super.onPause();
     }
 
@@ -99,27 +116,45 @@ public class CameraActivity extends Activity {
 	      datasource.close();
 	      releaseMediaRecorder();
 	      releaseCamera();
+	      counter=0;
+	      shakeDetector.deleteObservers();
 		  super.onDestroy();
-	  }
+	}
 	
+	
+	
+	
+	
+	/**IS CALLED WHEN THERE ARE CHANGES IN THE ACCELEROMETER OBSERVABLE */
+	@Override
+	public void update(Observable observable, Object data) {
+		counter++;
+		if(counter%10==0){
+			show_toast("Reduce Shaking");
+		}
+	}
 
+
+	
+	/**REALEASE MEDIA RECORDER*/
     private void releaseMediaRecorder(){
         if (mediaRecorder != null) {
             mediaRecorder.reset();
-            mediaRecorder.release(); // release the media recorder object
+            mediaRecorder.release();
             mediaRecorder = null;
         }
     }
-
+    
+    
     private void releaseCamera(){
         if (cameraInstance != null){
-        	cameraInstance.release();// release the camera for other applications
+        	cameraInstance.release();
         	cameraInstance = null;
         }
     }
 	
     
-    /** A safe way to get an instance of the Camera object. */
+    /** GET AN INSTANCE OF THE CAMERA OBJECT */
 	public static Camera getCameraInstance(){
 	    Camera c = null;
 	    try {
@@ -132,7 +167,7 @@ public class CameraActivity extends Activity {
 	}
 	
 	
-	
+	/** PREPARE MEDIA RECORDER FOR RECORDING */
 	private boolean prepareVideoRecorder(Camera camera){
 		Log.i(DEBUG_TAG,"prepareVideoRecorder()");
 	    cameraInstance = camera;
@@ -212,7 +247,7 @@ public class CameraActivity extends Activity {
 	
 	
 
-	/*
+	/**
 	 * Listener 
 	 */
 	OnClickListener recordListener = new OnClickListener() {
@@ -224,11 +259,12 @@ public class CameraActivity extends Activity {
 	                mediaRecorder.stop();  // stop the recording
 	                releaseMediaRecorder(); // release the MediaRecorder object
 	                cameraInstance.lock();         // take camera access back from MediaRecorder
-
+	                
 	                // inform the user that recording has stopped
 	                //setCaptureButtonText("Capture");
 	                isRecording = false;
 	                Log.i(DEBUG_TAG,"Media recorder was already recording");
+	                
 	                
 	                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 	                Log.d(DEBUG_TAG,Uri.fromFile(handlerFile).toString());
@@ -236,8 +272,9 @@ public class CameraActivity extends Activity {
 	                
 	                metaData=getMetaDataFromFile(retriever);
 	                long insertId = datasource.insertMetaData(metaData);
-	                Log.d(DEBUG_TAG,"New row in table: ID=" +insertId);
-	                
+
+	                Log.d(DEBUG_TAG,"New row in table: ID=" +insertId +" Counter: "+counter);
+	                counter=0;
                 	new HttpAsyncTask(HttpAsyncTask.HTTP_POST,getString(R.string.video_upload_url), metaData, 
                 		new HttpAsyncTask.Callback() {
 	    					@Override
@@ -273,6 +310,7 @@ public class CameraActivity extends Activity {
 	                    // now you can start recording
 	                	Log.i("CameraActivity","Media recorder will be started in the next line");
 	                    mediaRecorder.start();
+	                    counter=0;
 	                    // inform the user that recording has started
 	                    //setCaptureButtonText("Stop");
 	                    isRecording = true;
@@ -294,7 +332,7 @@ public class CameraActivity extends Activity {
 		data.setVideoFile(handlerFile.getName());
 		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
 		data.setDuration(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
-		data.setFrameRate(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)));
+		data.setShaking(counter);
 		data.setResolution(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)+"*"+retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
 		return data;
 		
@@ -304,6 +342,9 @@ public class CameraActivity extends Activity {
     	Toast toast = Toast.makeText(this, s, Toast.LENGTH_LONG);
         toast.show();
 	}
+
+
+
 	
 	
 }
