@@ -275,7 +275,7 @@ public class CameraActivity extends Activity implements Observer {
 
 	                Log.d(DEBUG_TAG,"New row in table: ID=" +insertId +" Counter: "+counter);
 	                counter=0;
-                	new HttpAsyncTask(HttpAsyncTask.HTTP_POST,getString(R.string.video_upload_url), metaData, 
+                	new HttpAsyncTask(HttpAsyncTask.HTTP_POST,ServerLocations.getVideoMetadataUploadUrl(CameraActivity.this), metaData, 
                 		new HttpAsyncTask.Callback() {
 	    					@Override
 	    					public void run(String result) {

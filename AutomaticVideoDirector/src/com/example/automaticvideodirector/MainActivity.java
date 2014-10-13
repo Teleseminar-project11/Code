@@ -7,11 +7,13 @@ import com.example.automaticvideodirector.database.MetaData;
 import android.net.*;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -49,6 +51,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		
 		buttonIsConnected = (Button) findViewById(R.id.button_isConnected);
 		buttonIsConnected.setOnClickListener(isConnectedListener);
 		
@@ -68,6 +72,18 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.action_settings: {
+	            launchSettings(getCurrentFocus());
+	        }
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 
 	/*
@@ -143,7 +159,8 @@ public class MainActivity extends Activity {
         	return;
         }
         
-        String requestURL = getString(R.string.video_upload_url);
+        String requestURL = ServerLocations.getVideoUploadUrl(this, 1);
+        
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 	    if (networkInfo != null && networkInfo.isConnected()) {
@@ -184,11 +201,16 @@ public class MainActivity extends Activity {
 		this.startActivityForResult(intent, A_FILE_DIALOG_ACTIVITY);
     }
     
+    public void launchSettings(View view) {
+		Intent intent = new Intent(this, SettingsActivity.class);
+		this.startActivity(intent);
+    }
+    
     public void sendHttpGet(View view) {
 		Intent intent = new Intent(this, DisplayMessageActivity.class);
         
 //        String requestURL = "http://www.google.ru/killer-robots.txt";
-        String requestURL = getString(R.string.video_list_url);
+        String requestURL = ServerLocations.getSelectedListUrl(this);
     	intent.putExtra(REQUEST_URL, requestURL);
     	
     	show_toast("Getting: " + requestURL);
