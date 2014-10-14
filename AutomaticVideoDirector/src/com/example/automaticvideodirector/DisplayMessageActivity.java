@@ -37,7 +37,7 @@ public class DisplayMessageActivity extends Activity {
 	    	return;
 	    }
 	    
-		new HttpAsyncTask(HttpAsyncTask.HTTP_GET, requestURL, new MetaData(),
+		new HttpAsyncTask(HttpAsyncTask.HTTP_GET, requestURL, null,
 			new HttpAsyncTask.Callback() {
 				@Override
 				public void run(String result) {

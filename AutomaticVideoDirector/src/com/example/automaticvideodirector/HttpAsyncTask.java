@@ -95,7 +95,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 		if (result == null) {
 			Log.d(DEBUG_TAG, "Error");
 		} else {
-			Log.d(DEBUG_TAG, result+" - yoyo");
+			Log.d(DEBUG_TAG, "Result: "+ result);
 		}
 		if (callback != null) {
 			callback.run(result);
@@ -122,10 +122,11 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
     	    JSONObject jsonParam = new JSONObject();
     	    try {
 				jsonParam.put("name", data.getVideoFile());
-//				jsonParam.put("timestamp", data.getTimeStamp());
-//				jsonParam.put("duration", data.getDuration());
-//				jsonParam.put("resolution", data.getResolution());
-//				jsonParam.put("shaking", data.getShaking());
+				jsonParam.put("finish_time", data.getTimeStamp());
+				jsonParam.put("duration", data.getDuration());
+				jsonParam.put("width", data.getWidth());
+				jsonParam.put("height", data.getHeight());
+				jsonParam.put("shaking", data.getShaking());
 				Log.d(DEBUG_TAG, jsonParam.toString());
 			} catch (JSONException e) {
 				Log.d(DEBUG_TAG, "JSON wrong");
@@ -193,7 +194,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 	
 	public String httpFileUpload(String myurl, MetaData data) throws IOException {
 
-		URL url = new URL(myurl + "/" + new File(data.getVideoFile()).getName());
+		URL url = new URL(myurl);
 		HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 		try {
 			urlConnection.setDoOutput(true);
@@ -210,7 +211,8 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 
             DataOutputStream dos = new DataOutputStream(urlConnection.getOutputStream());
             
-            FileInputStream fstrm = new FileInputStream(data.getVideoFile());
+            FileInputStream fstrm = new FileInputStream(CameraActivity.getVideoDir() 
+            		+ "/" + data.getVideoFile());
             // create a buffer of maximum size
             int bytesAvailable = fstrm.available();
                 

@@ -22,4 +22,10 @@
     <string name="button_settings">Settings&#8230;</string>
     <string name="server_address">Server address</string>
     <string name="server_port">Server port</string>
+    
+    <string name="button_capture">Capture</string>
+    <string name="button_stop">Stop</string>
+    
+    <string name="button_try_upload">Try Upload</string>
+    
 </resources>

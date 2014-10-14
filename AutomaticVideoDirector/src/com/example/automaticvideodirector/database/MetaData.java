@@ -14,7 +14,8 @@ public class MetaData {
 	private String filename;
 	private String timestamp;
 	private int duration;
-	private String resolution;
+	private int width;
+	private int height;
 	private int shaking;
 	private String status;
 	private long serverId;
@@ -33,8 +34,11 @@ public class MetaData {
 	public int getDuration(){
 		return this.duration;
 	}
-	public String getResolution(){
-		return this.resolution;
+	public int getWidth(){
+		return this.width;
+	}
+	public int getHeight(){
+		return this.height;
 	}
 	public int getShaking(){
 		return this.shaking;
@@ -59,8 +63,11 @@ public class MetaData {
 	public void setDuration(int duration){
 		this.duration=duration;
 	}
-	public void setResolution(String resolution){
-		this.resolution=resolution;
+	public void setWidth(int width){
+		this.width=width;
+	}
+	public void setHeight(int height){
+		this.height=height;
 	}
 	public void setShaking(int shaking){
 		this.shaking=shaking;

@@ -5,11 +5,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public final class ServerLocations {
-	static final String video_upload = "/video/";
-	static final String video_selected = "/selected";
-	static final String event_list = "/events";
-	static final String event_descr = "/event/1";
-	static final String video_metadata_upload = "/event/1";
+	static final String event_new = "/event/new"; //GET
+	static final String event_descr = "/event/111"; //event_id, GET
+	static final String video_metadata_upload = "/event/111"; //event_id, POST
+	static final String video_upload = "/video/"; //video_id, PUT
+	static final String video_download = "/video/"; //video_id, GET
+	static final String video_selected = "/selected"; //GET
 	
 	static String getServerAndPort(Context context) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);

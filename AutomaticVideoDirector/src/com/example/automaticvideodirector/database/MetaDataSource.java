@@ -19,7 +19,8 @@ public class MetaDataSource {
 									VideoDatabaseHelper.COLUMN_FILENAME, 
 									VideoDatabaseHelper.COLUMN_TIMESTAMP, 
 									VideoDatabaseHelper.COLUMN_DURATION, 
-									VideoDatabaseHelper.COLUMN_RESOLUTION, 
+									VideoDatabaseHelper.COLUMN_WIDTH, 
+									VideoDatabaseHelper.COLUMN_HEIGHT,
 									VideoDatabaseHelper.COLUMN_SHAKING,
 									VideoDatabaseHelper.COLUMN_SERVERID,
 									VideoDatabaseHelper.COLUMN_STATUS		};
@@ -44,7 +45,8 @@ public class MetaDataSource {
 	    values.put(VideoDatabaseHelper.COLUMN_FILENAME, data.getVideoFile());
 	    values.put(VideoDatabaseHelper.COLUMN_TIMESTAMP, data.getTimeStamp());
 	    values.put(VideoDatabaseHelper.COLUMN_DURATION, data.getDuration());
-	    values.put(VideoDatabaseHelper.COLUMN_RESOLUTION, data.getResolution());
+	    values.put(VideoDatabaseHelper.COLUMN_WIDTH, data.getWidth());
+	    values.put(VideoDatabaseHelper.COLUMN_HEIGHT, data.getHeight());
 	    values.put(VideoDatabaseHelper.COLUMN_SHAKING, data.getShaking());
 	    values.put(VideoDatabaseHelper.COLUMN_SERVERID, 0);
 	    values.put(VideoDatabaseHelper.COLUMN_STATUS, "false");
@@ -76,10 +78,11 @@ public class MetaDataSource {
 	        	newMetaData.setVideoFile(cursor.getString(1));
 	        	newMetaData.setTimeStamp(cursor.getString(2));
 	        	newMetaData.setDuration(cursor.getInt(3));
-	        	newMetaData.setResolution(cursor.getString(4));
-	        	newMetaData.setShaking(cursor.getInt(5));
-	        	newMetaData.setServerId(cursor.getLong(6));
-	        	newMetaData.setStatus(cursor.getString(7));
+	        	newMetaData.setWidth(cursor.getInt(4));
+	        	newMetaData.setHeight(cursor.getInt(5));
+	        	newMetaData.setShaking(cursor.getInt(6));
+	        	newMetaData.setServerId(cursor.getLong(7));
+	        	newMetaData.setStatus(cursor.getString(8));
 	        }
 		cursor.close();
 		return newMetaData;

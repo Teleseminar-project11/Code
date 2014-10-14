@@ -93,4 +93,15 @@
         android:text="@string/button_settings"
     />
     
+    <Button
+        android:id="@+id/button_try_upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/file_selection_linear"
+        android:layout_toRightOf="@id/button_settings"
+        android:layout_toEndOf="@id/button_settings"
+        android:onClick="tryUpload"
+        android:text="@string/button_try_upload"
+    />
+    
 </RelativeLayout>

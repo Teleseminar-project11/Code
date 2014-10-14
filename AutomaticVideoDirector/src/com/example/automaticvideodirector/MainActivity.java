@@ -2,7 +2,11 @@ package com.example.automaticvideodirector;
 
 import java.io.File;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.example.automaticvideodirector.database.MetaData;
+import com.example.automaticvideodirector.database.MetaDataSource;
 
 import android.net.*;
 import android.os.Bundle;
@@ -43,8 +47,8 @@ public class MainActivity extends Activity {
 	final int A_FILE_DIALOG_ACTIVITY = 2;
 	
 	private TextView filePathTextView;
-	//For Testing
-//	private MetaData data = new MetaData("id-1","file1.mov","x-34");
+	
+	private MetaDataSource datasource;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,8 @@ public class MainActivity extends Activity {
 		textView = (TextView) findViewById(R.id.textView_welcome);
 		
 		filePathTextView = (TextView)findViewById(R.id.select_file);
+		
+		datasource = new MetaDataSource(this);
 	}
 	
 	@Override
@@ -159,6 +165,7 @@ public class MainActivity extends Activity {
         	return;
         }
         
+        // TODO get video id from metadata
         String requestURL = ServerLocations.getVideoUploadUrl(this, 1);
         
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -215,6 +222,69 @@ public class MainActivity extends Activity {
     	
     	show_toast("Getting: " + requestURL);
     	startActivity(intent);
+    }
+    
+    public void tryUpload(View view) {    	
+    	String selectedURL = ServerLocations.getSelectedListUrl(this);
+    	
+    	ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+	    if (networkInfo == null || !networkInfo.isConnected()) {
+	    	show_toast("No network");
+	    	return;
+	    }
+	    
+		new HttpAsyncTask(HttpAsyncTask.HTTP_GET, selectedURL, null,
+			new HttpAsyncTask.Callback() {
+				@Override
+				public void run(String result) {
+					if (result != null) {
+					    String no_escape = result
+								.replace("\\\"", "\"")
+								.replace("\"{", "{")
+								.replace("}\"", "}");
+						try {
+							JSONObject json = new JSONObject(no_escape);
+							int serverID = json.getInt("id");
+							System.out.println("Requested to upload " + serverID);
+							// TODO check videos and get video id from metadata
+							uploadVideo(serverID);
+						} catch (JSONException e) {
+							System.out.println("Invalid json response");
+						}					
+	    			} else {
+	    				show_toast("HTTP_GET failed");
+	    			}
+				}
+			}
+		).execute();
+    }
+    
+    public void uploadVideo (int id) {    	
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+	    if (networkInfo != null && networkInfo.isConnected()) {
+	    	show_toast("Transefing: " + filePathTextView.getText());
+	    	String requestURL = ServerLocations.getVideoUploadUrl(this, id);
+	    	MetaData video = datasource.selectMetaData(id);
+	    	
+			new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
+				new HttpAsyncTask.Callback() {
+					@Override
+					public void run(String result) {
+						if (result != null) {
+							show_toast(result);
+						} else {
+							show_toast("Upload failed");
+						}
+					}
+				}
+			).execute();
+	    	
+        } else {
+	    	show_toast("No network");
+	    	return;
+	    }
     }
     
     @Override
