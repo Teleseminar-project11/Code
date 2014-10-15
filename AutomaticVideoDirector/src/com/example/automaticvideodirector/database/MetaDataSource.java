@@ -70,14 +70,15 @@ public class MetaDataSource {
 	//GETS THE METADATA OF A SPECIFIC REQUESTED VIDEOFILE.--->PARAMETERS: SERVERID,  RETURN:VIDEOFILE RELATED METADATA
 	public MetaData selectMetaData(Integer serverId){
 		
-		String selectQuery = "SELECT  * FROM " + VideoDatabaseHelper.TABLE_METADATA 
-				+ " WHERE " + VideoDatabaseHelper.COLUMN_SERVERID + "=" + serverId;
+		String selectQuery = "SELECT * FROM " + VideoDatabaseHelper.TABLE_METADATA 
+				+ " WHERE " + VideoDatabaseHelper.COLUMN_SERVERID + " = " + serverId;
 		Cursor cursor = database.rawQuery(selectQuery, null);
-		MetaData newMetaData=new MetaData();
+		MetaData newMetaData = null;
 		System.out.println(cursor.getColumnCount());
-		System.out.println(cursor.getColumnCount());
-		if (cursor!=null) {
+		System.out.println(cursor.getCount());
+		if (cursor!=null && cursor.getCount() > 0) {
 				cursor.moveToFirst();
+				newMetaData = new MetaData();
 	        	newMetaData.setId(cursor.getLong(0));
 	        	newMetaData.setVideoFile(cursor.getString(1));
 	        	newMetaData.setTimeStamp(cursor.getString(2));

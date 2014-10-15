@@ -57,7 +57,7 @@ public class HttpGetService extends Service{
 				while(!isInterrupted){
 				try {
 					Thread.sleep(10000);
-//					tryUpload();
+					tryUpload();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -110,6 +110,7 @@ public class HttpGetService extends Service{
 								.replace("]", "");
 					    System.out.println(no_escape);
 						try {
+							// TODO better JSON parser
 							JSONObject json = new JSONObject(no_escape);
 							int serverID = json.getInt("id");
 							System.out.println("Requested to upload " + serverID);
@@ -135,9 +136,12 @@ public class HttpGetService extends Service{
 	    	datasource.open();
 	    	MetaData video = datasource.selectMetaData(id);
 	    	datasource.close();
+	    	if (video == null) {
+	    		show_toast("Server returned unknow video");
+	    		return;
+	    	}
 	    	show_toast("Transefing: " + video.getVideoFile());
-	    	
-			new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
+	    	new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
 				new HttpAsyncTask.Callback() {
 					@Override
 					public void run(String result) {

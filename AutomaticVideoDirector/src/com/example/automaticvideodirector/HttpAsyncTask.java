@@ -234,6 +234,8 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
             dos.flush();
 
             // retrieve the response from server
+            Log.d(DEBUG_TAG, Integer.toString(urlConnection.getResponseCode()));
+            Log.d(DEBUG_TAG, urlConnection.getResponseMessage());
             Log.d(DEBUG_TAG, "Reading response");
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));

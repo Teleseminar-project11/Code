@@ -21,7 +21,6 @@ public final class ServerLocations {
 
 	
 	static String getVideoUploadUrl(Context context, int id) {
-		System.out.println(getServerAndPort(context) + video_upload + Integer.toString(id));
         return getServerAndPort(context) + video_upload + Integer.toString(id);
 	}
 	

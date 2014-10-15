@@ -247,70 +247,8 @@ public class MainActivity extends Activity {
     	startActivity(intent);
     }
     
-    public void tryUpload(View view) {    	
-    	String selectedURL = ServerLocations.getSelectedListUrl(this);
-    	
-    	ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-	    if (networkInfo == null || !networkInfo.isConnected()) {
-	    	show_toast("No network");
-	    	return;
-	    }
-	    
-		new HttpAsyncTask(HttpAsyncTask.HTTP_GET, selectedURL, null,
-			new HttpAsyncTask.Callback() {
-				@Override
-				public void run(String result) {
-					if (result != null) {
-					    String no_escape = result
-								.replace("[", "")
-								.replace("]", "");
-					    System.out.println(no_escape);
-						try {
-							JSONObject json = new JSONObject(no_escape);
-							int serverID = json.getInt("id");
-							System.out.println("Requested to upload " + serverID);
-							// TODO check videos and get video id from metadata
-							uploadVideo(serverID);
-						} catch (JSONException e) {
-							System.out.println("Invalid json response");
-							show_toast("HTTP_GET failed:" + result);
-						}					
-	    			} else {
-	    				show_toast("HTTP_GET failed:" + result);
-	    			}
-				}
-			}
-		).execute();
-    }
-    
-    public void uploadVideo (int id) {    	
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-	    if (networkInfo != null && networkInfo.isConnected()) {
-	    	String requestURL = ServerLocations.getVideoUploadUrl(this, id);
-	    	datasource.open();
-	    	MetaData video = datasource.selectMetaData(id);
-	    	datasource.close();
-	    	show_toast("Transefing: " + video.getVideoFile());
-	    	
-			new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
-				new HttpAsyncTask.Callback() {
-					@Override
-					public void run(String result) {
-						if (result != null) {
-							show_toast(result);
-						} else {
-							show_toast("Upload failed");
-						}
-					}
-				}
-			).execute();
-	    	
-        } else {
-	    	show_toast("No network");
-	    	return;
-	    }
+    public void tryUpload(View view) {
+    	show_toast("Empty callback");
     }
     
     @Override

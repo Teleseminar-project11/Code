@@ -107,7 +107,6 @@ class MyCookieStore implements CookieStore {
 		System.out.println(uri.getHost());
 		
 		if (lstCookies == null) {
-			System.out.println(uri.getHost());
 			mapCookies.put(uri.getHost(), new ArrayList<HttpCookie>());
 			
 		}
