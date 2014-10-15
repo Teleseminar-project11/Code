@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,20 +106,20 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 	 */
 	public String httpPost(String myurl, MetaData data) throws IOException {
 
-        String response = "";
-        
-    	URL url = new URL(myurl);
-    	HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-    	   try {
-    	    urlConnection.setDoOutput(true);
-    	    urlConnection.setRequestMethod("POST");  
-    	    urlConnection.setChunkedStreamingMode(0);
-    	    urlConnection.setRequestProperty("Content-Type","application/json");
-    	    urlConnection.connect();
-    	    
-    	    //Creation - JSONObject
-    	    JSONObject jsonParam = new JSONObject();
-    	    try {
+		String response = "";
+
+		URL url = new URL(myurl);
+		HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+		try {
+			urlConnection.setDoOutput(true);
+			urlConnection.setRequestMethod("POST");
+			urlConnection.setChunkedStreamingMode(0);
+			urlConnection.setRequestProperty("Content-Type", "application/json");
+			urlConnection.connect();
+
+			//Creation - JSONObject
+			JSONObject jsonParam = new JSONObject();
+			try {
 				jsonParam.put("name", data.getVideoFile());
 				jsonParam.put("finish_time", data.getTimeStamp());
 				jsonParam.put("duration", data.getDuration());
@@ -132,33 +131,32 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 				Log.d(DEBUG_TAG, "JSON wrong");
 				e.printStackTrace();
 			}
-    	    
-    	    //POST REQUEST
-    	    OutputStream output = new BufferedOutputStream(urlConnection.getOutputStream());
-    	    output.write(jsonParam.toString().getBytes());
-    	    output.flush();
-    	    
-    	    //POST RESPONSE
-    	    StringBuilder sb = new StringBuilder();  
-    	    int httpResult = urlConnection.getResponseCode();
-    	    Log.d(DEBUG_TAG,"httpResult: "+httpResult);
-    	    if(httpResult == HttpURLConnection.HTTP_OK){
-    	    	BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"utf-8")); 
-    	        while ((response = br.readLine()) != null) {  
-    	        	sb.append(response + "\n");  
-    	        }  
-    	        br.close();
-    	        Log.d(DEBUG_TAG, sb.toString());
-    	        response = sb.toString();
-    	    } 
-    	    else{
-    	    	Log.d(DEBUG_TAG, urlConnection.getResponseMessage());  
-    	    }
-    	   } finally{
-    		   urlConnection.disconnect();
-    	   }
-    	   return response;
-        }
+
+			//POST REQUEST
+			OutputStream output = new BufferedOutputStream(urlConnection.getOutputStream());
+			output.write(jsonParam.toString().getBytes());
+			output.flush();
+
+			//POST RESPONSE
+			StringBuilder sb = new StringBuilder();
+			int httpResult = urlConnection.getResponseCode();
+			Log.d(DEBUG_TAG, "httpResult: " + httpResult);
+			if (httpResult == HttpURLConnection.HTTP_OK) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
+				while ((response = br.readLine()) != null) {
+					sb.append(response + "\n");
+				}
+				br.close();
+				Log.d(DEBUG_TAG, sb.toString());
+				response = sb.toString();
+			} else {
+				Log.d(DEBUG_TAG, urlConnection.getResponseMessage());
+			}
+		} finally {
+			urlConnection.disconnect();
+		}
+		return response;
+	}
 	
 	
 	public String httpGet(String myurl) throws IOException {

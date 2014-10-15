@@ -2,6 +2,10 @@ package com.example.automaticvideodirector;
 
 import java.io.File;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,28 +53,39 @@ public class MainActivity extends Activity {
 	private TextView filePathTextView;
 	
 	private MetaDataSource datasource;
+	
+	private CookieManager cmrCookieMan;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-		
+
 		buttonIsConnected = (Button) findViewById(R.id.button_isConnected);
 		buttonIsConnected.setOnClickListener(isConnectedListener);
-		
+
 		buttonConnect = (Button) findViewById(R.id.button_connect);
 		buttonConnect.setOnClickListener(connectListener);
-		
+
 		buttonRecord = (Button) findViewById(R.id.button_record);
 		buttonRecord.setOnClickListener(recordAndShareListener);
-		
+
 		textView = (TextView) findViewById(R.id.textView_welcome);
-		
-		filePathTextView = (TextView)findViewById(R.id.select_file);
-		
+
+		filePathTextView = (TextView) findViewById(R.id.select_file);
+
 		datasource = new MetaDataSource(this);
+
+//		CookieManager cookieManager = new CookieManager();
+//		CookieHandler.setDefault(cookieManager);
+		
+//		CookieSyncManager.createInstance(this);
+//		CookieSyncManager.getInstance().sync();
+		
+		cmrCookieMan = new CookieManager(new MyCookieStore(this), CookiePolicy.ACCEPT_ALL);
+		CookieHandler.setDefault(cmrCookieMan);
 	}
 	
 	@Override
@@ -86,10 +101,16 @@ public class MainActivity extends Activity {
 	    switch (item.getItemId()) {
 	        case R.id.action_settings: {
 	            launchSettings(getCurrentFocus());
+	            break;
+	        }
+	        case R.id.action_delete_cookies: {
+	        	cmrCookieMan.getCookieStore().removeAll();
+	        	break;
 	        }
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
+	    return true;
 	}
 
 	/*
@@ -240,9 +261,9 @@ public class MainActivity extends Activity {
 				public void run(String result) {
 					if (result != null) {
 					    String no_escape = result
-								.replace("\\\"", "\"")
-								.replace("\"{", "{")
-								.replace("}\"", "}");
+								.replace("[", "")
+								.replace("]", "");
+					    System.out.println(no_escape);
 						try {
 							JSONObject json = new JSONObject(no_escape);
 							int serverID = json.getInt("id");
@@ -251,9 +272,10 @@ public class MainActivity extends Activity {
 							uploadVideo(serverID);
 						} catch (JSONException e) {
 							System.out.println("Invalid json response");
+							show_toast("HTTP_GET failed:" + result);
 						}					
 	    			} else {
-	    				show_toast("HTTP_GET failed");
+	    				show_toast("HTTP_GET failed:" + result);
 	    			}
 				}
 			}
@@ -264,9 +286,11 @@ public class MainActivity extends Activity {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 	    if (networkInfo != null && networkInfo.isConnected()) {
-	    	show_toast("Transefing: " + filePathTextView.getText());
 	    	String requestURL = ServerLocations.getVideoUploadUrl(this, id);
+	    	datasource.open();
 	    	MetaData video = datasource.selectMetaData(id);
+	    	datasource.close();
+	    	show_toast("Transefing: " + video.getVideoFile());
 	    	
 			new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
 				new HttpAsyncTask.Callback() {
@@ -295,6 +319,7 @@ public class MainActivity extends Activity {
 	    			Uri uri = data.getData();
 	    			String filePath = uri.getPath();
 	    			filePathTextView.setText(filePath);
+	    			break;
 	    		}
 	    	}
 	    	case A_FILE_DIALOG_ACTIVITY: {
@@ -319,6 +344,7 @@ public class MainActivity extends Activity {
 	    		} else {
 	    			filePathTextView.setText("");
 	    		}
+	    		break;
 	    	}
 		}
     }

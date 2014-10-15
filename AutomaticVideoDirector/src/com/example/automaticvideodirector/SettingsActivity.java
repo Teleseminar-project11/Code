@@ -6,6 +6,7 @@ import android.os.Bundle;
 public class SettingsActivity extends Activity {
 	public static final String SERVER_ADDRESS = "server_address";
 	public static final String SERVER_PORT = "server_port";
+	public static final String EVENT = "event";
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {

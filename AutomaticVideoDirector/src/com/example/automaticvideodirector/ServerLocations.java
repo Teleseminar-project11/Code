@@ -6,8 +6,8 @@ import android.preference.PreferenceManager;
 
 public final class ServerLocations {
 	static final String event_new = "/event/new"; //GET
-	static final String event_descr = "/event/111"; //event_id, GET
-	static final String video_metadata_upload = "/event/111"; //event_id, POST
+	static final String event_descr = "/event/"; //event_id, GET
+	static final String video_metadata_upload = "/event/"; //event_id, POST
 	static final String video_upload = "/video/"; //video_id, PUT
 	static final String video_download = "/video/"; //video_id, GET
 	static final String video_selected = "/selected"; //GET
@@ -26,7 +26,15 @@ public final class ServerLocations {
 	}
 	
 	static String getVideoMetadataUploadUrl(Context context) {
-	    return getServerAndPort(context) + video_metadata_upload;
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+		String event = sharedPref.getString(SettingsActivity.EVENT, "");
+	    return getServerAndPort(context) + video_metadata_upload + event;
+	}
+	
+	static String getEventDescriptionUrl(Context context) {
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+		String event = sharedPref.getString(SettingsActivity.EVENT, "");
+	    return getServerAndPort(context) + event_descr  + event;
 	}
 	
 	static String getSelectedListUrl(Context context) {

@@ -10,4 +10,9 @@
         android:key="server_port" 
         android:title="@string/server_port" 
         android:enabled="true"/>
+    <com.example.automaticvideodirector.EditTextPreferenceWithSummary 
+        android:defaultValue="111" 
+        android:key="event" 
+        android:title="@string/event" 
+        android:enabled="true"/>
 </PreferenceScreen>

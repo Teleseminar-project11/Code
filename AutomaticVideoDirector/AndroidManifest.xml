@@ -31,6 +31,9 @@
             android:name=".CameraActivity"
             android:screenOrientation="landscape" >
             <!-- configure this activity to use landscape orientation -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".DisplayMessageActivity"
@@ -38,7 +41,7 @@
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.egurnov.myfirstapp.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
@@ -46,7 +49,7 @@
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.egurnov.myfirstapp.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity" />
     </application>

@@ -22,6 +22,8 @@
     <string name="button_settings">Settings&#8230;</string>
     <string name="server_address">Server address</string>
     <string name="server_port">Server port</string>
+    <string name="event">Event</string>
+    <string name="delete_cookies">Delete cookies</string>
     
     <string name="button_capture">Capture</string>
     <string name="button_stop">Stop</string>
