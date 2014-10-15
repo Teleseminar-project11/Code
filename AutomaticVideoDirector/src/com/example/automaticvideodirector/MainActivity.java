@@ -86,6 +86,8 @@ public class MainActivity extends Activity {
 		
 		cmrCookieMan = new CookieManager(new MyCookieStore(this), CookiePolicy.ACCEPT_ALL);
 		CookieHandler.setDefault(cmrCookieMan);
+		
+		startService(new Intent(MainActivity.this, HttpGetService.class));
 	}
 	
 	@Override

@@ -52,6 +52,8 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity" />
+        
+        <service android:name=".HttpGetService"/>
     </application>
 
 </manifest>
