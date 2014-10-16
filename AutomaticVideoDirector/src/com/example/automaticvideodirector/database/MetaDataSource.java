@@ -22,6 +22,7 @@ public class MetaDataSource {
 									VideoDatabaseHelper.COLUMN_WIDTH, 
 									VideoDatabaseHelper.COLUMN_HEIGHT,
 									VideoDatabaseHelper.COLUMN_SHAKING,
+									VideoDatabaseHelper.COLUMN_TILT,
 									VideoDatabaseHelper.COLUMN_SERVERID,
 									VideoDatabaseHelper.COLUMN_STATUS		};
 	
@@ -48,6 +49,7 @@ public class MetaDataSource {
 	    values.put(VideoDatabaseHelper.COLUMN_WIDTH, data.getWidth());
 	    values.put(VideoDatabaseHelper.COLUMN_HEIGHT, data.getHeight());
 	    values.put(VideoDatabaseHelper.COLUMN_SHAKING, data.getShaking());
+	    values.put(VideoDatabaseHelper.COLUMN_TILT, data.getTilt());
 	    values.put(VideoDatabaseHelper.COLUMN_SERVERID, 0);
 	    values.put(VideoDatabaseHelper.COLUMN_STATUS, "false");
  
@@ -58,10 +60,12 @@ public class MetaDataSource {
 	        Log.d(DEBUG_TAG, "Filename:"+cursor.getString(1));
 	        Log.d(DEBUG_TAG, "Timestamp:"+cursor.getString(2));
 	        Log.d(DEBUG_TAG, "Duration:"+cursor.getInt(3));
-	        Log.d(DEBUG_TAG, "resolution:"+cursor.getString(4));
-	        Log.d(DEBUG_TAG, "shaking:"+cursor.getInt(5));
-	        Log.d(DEBUG_TAG, "serverId:"+cursor.getLong(6));
-	        Log.d(DEBUG_TAG, "status:"+cursor.getString(7));
+	        Log.d(DEBUG_TAG, "width:"+cursor.getString(4));
+	        Log.d(DEBUG_TAG, "height:"+cursor.getString(5));
+	        Log.d(DEBUG_TAG, "shaking:"+cursor.getInt(6));
+	        Log.d(DEBUG_TAG, "tilt:"+cursor.getInt(7));
+	        Log.d(DEBUG_TAG, "serverId:"+cursor.getLong(8));
+	        Log.d(DEBUG_TAG, "status:"+cursor.getString(9));
 	        cursor.close();
 	    return insertId;
 	}
@@ -86,8 +90,9 @@ public class MetaDataSource {
 	        	newMetaData.setWidth(cursor.getInt(4));
 	        	newMetaData.setHeight(cursor.getInt(5));
 	        	newMetaData.setShaking(cursor.getInt(6));
-	        	newMetaData.setServerId(cursor.getLong(7));
-	        	newMetaData.setStatus(cursor.getString(8));
+	        	newMetaData.setTilt(cursor.getInt(7));
+	        	newMetaData.setServerId(cursor.getLong(8));
+	        	newMetaData.setStatus(cursor.getString(9));
 	        }
 		cursor.close();
 		return newMetaData;

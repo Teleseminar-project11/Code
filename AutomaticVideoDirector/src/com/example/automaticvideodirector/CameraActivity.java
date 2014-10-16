@@ -62,7 +62,9 @@ public class CameraActivity extends Activity implements Observer {
 	
 	private ShakeDetection shakeDetector;
 	private SensorManager sensorManager;
-	private int counter;
+	private TiltDetection tiltDetector;
+	private int counterShake;
+	private int counterTilt;
 
 	
 	
@@ -92,10 +94,13 @@ public class CameraActivity extends Activity implements Observer {
         datasource.open();
         
         //SENSOR MANAGER
-        counter=0;
+        counterShake=0;
+        counterTilt=0;
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         shakeDetector = new ShakeDetection(sensorManager);
         shakeDetector.addObserver(CameraActivity.this);
+        tiltDetector = new TiltDetection(sensorManager);
+        tiltDetector.addObserver(CameraActivity.this);
 	}
 	
 	
@@ -105,8 +110,10 @@ public class CameraActivity extends Activity implements Observer {
         datasource.close();
         releaseMediaRecorder();
         releaseCamera();
-        counter=0;
+        counterShake=0;
+        counterTilt=0;
         shakeDetector.deleteObservers();
+        tiltDetector.deleteObservers();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onPause();
 	}
@@ -136,9 +143,18 @@ public class CameraActivity extends Activity implements Observer {
 	/**IS CALLED WHEN THERE ARE CHANGES IN THE ACCELEROMETER OBSERVABLE */
 	@Override
 	public void update(Observable observable, Object data) {
-		counter++;
-		if(counter%10==0){
-			show_toast("Reduce Shaking");
+		if(observable==shakeDetector){
+			counterShake++;
+			if(counterShake%10==0){
+				show_toast("Reduce Shaking");
+			}
+		}
+		else if(observable==tiltDetector){
+			counterTilt++;
+			if(counterTilt%40==0){
+				show_toast("Hold straight");
+			}
+			
 		}
 	}
 
@@ -260,21 +276,16 @@ public class CameraActivity extends Activity implements Observer {
         if (isRecording) {
             // inform the user that recording has stopped
             Log.d(DEBUG_TAG,"Media recorder was already recording");
-            
             // stop recording and release camera
             mediaRecorder.stop();   // stop the recording
             Log.i(DEBUG_TAG,"Media recorder stopped");
             releaseMediaRecorder(); // release the MediaRecorder object
             Log.i(DEBUG_TAG,"Media recorder released");
             cameraInstance.lock();  // take camera access back from MediaRecorder
-            
             Log.d(DEBUG_TAG,"Media recorder stopped, camera locked");
             
             
-            //TODO Hangs if you do this 
-//            captureButton.setText(getString(R.string.button_capture));
             captureButton.setBackgroundColor(getResources().getColor(R.color.green));
-            
             isRecording = false;
             
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -287,8 +298,9 @@ public class CameraActivity extends Activity implements Observer {
             metaData.setTimeStamp(timestamp.toString());
             long insertId = datasource.insertMetaData(metaData);
 
-            Log.d(DEBUG_TAG,"New row in table: ID=" +insertId +" Counter: "+counter);
-            counter=0;
+            Log.d(DEBUG_TAG,"New row in table: ID=" +insertId +" CounterShake: "+counterShake +", CounterTilt: "+counterTilt);
+            counterShake=0;
+            counterTilt=0;
         	new HttpAsyncTask(HttpAsyncTask.HTTP_POST,
         			ServerLocations.getVideoMetadataUploadUrl(CameraActivity.this), 
         			metaData, 
@@ -339,7 +351,8 @@ public class CameraActivity extends Activity implements Observer {
             	Log.d("CameraActivity","Media recorder will be started in the next line");
                 mediaRecorder.start();
                 Log.d("CameraActivity","Media recorder started");
-                counter=0;
+                counterShake=0;
+                counterTilt=0;
                 // inform the user that recording has started
                 
                 //TODO Hangs if you do this 
@@ -354,6 +367,8 @@ public class CameraActivity extends Activity implements Observer {
                 // inform user
             }
         }
+            
+        
 	}
 
 	public MetaData getMetaDataFromFile(MediaMetadataRetriever retriever){
@@ -363,7 +378,8 @@ public class CameraActivity extends Activity implements Observer {
 //		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
 		data.setTimeStamp(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
 		data.setDuration(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
-		data.setShaking(counter);
+		data.setShaking(counterShake);
+		data.setTilt(counterTilt);
 		data.setWidth(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)));
 		data.setHeight(Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)));
 		return data;

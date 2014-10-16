@@ -17,6 +17,7 @@ public class MetaData {
 	private int width;
 	private int height;
 	private int shaking;
+	private int tilt;
 	private String status;
 	private long serverId;
 	
@@ -42,6 +43,9 @@ public class MetaData {
 	}
 	public int getShaking(){
 		return this.shaking;
+	}
+	public int getTilt(){
+		return this.tilt;
 	}
 	public String getStatus(){
 		return this.status;
@@ -71,6 +75,9 @@ public class MetaData {
 	}
 	public void setShaking(int shaking){
 		this.shaking=shaking;
+	}
+	public void setTilt(int tilt){
+		this.tilt=tilt;
 	}
 	public void setStatus(String status){
 		this.status=status;

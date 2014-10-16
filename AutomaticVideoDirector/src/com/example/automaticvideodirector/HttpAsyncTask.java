@@ -124,6 +124,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, Wrapper> {
 				jsonParam.put("width", data.getWidth());
 				jsonParam.put("height", data.getHeight());
 				jsonParam.put("shaking", data.getShaking());
+//				jsonParam.put("tilt", data.getTilt());
 				Log.d(DEBUG_TAG, jsonParam.toString());
 			} catch (JSONException e) {
 				Log.d(DEBUG_TAG, "JSON wrong");
