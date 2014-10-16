@@ -1,16 +1,12 @@
 package com.example.automaticvideodirector;
 
 import java.io.File;
-
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.net.HttpURLConnection;
 
 import com.example.automaticvideodirector.database.MetaData;
-import com.example.automaticvideodirector.database.MetaDataSource;
 
 import android.net.*;
 import android.os.Bundle;
@@ -52,8 +48,6 @@ public class MainActivity extends Activity {
 	
 	private TextView filePathTextView;
 	
-	private MetaDataSource datasource;
-	
 	private CookieManager cmrCookieMan;
 
 	@Override
@@ -75,8 +69,6 @@ public class MainActivity extends Activity {
 		textView = (TextView) findViewById(R.id.textView_welcome);
 
 		filePathTextView = (TextView) findViewById(R.id.select_file);
-
-		datasource = new MetaDataSource(this);
 
 //		CookieManager cookieManager = new CookieManager();
 //		CookieHandler.setDefault(cookieManager);
@@ -199,11 +191,11 @@ public class MainActivity extends Activity {
 			new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
 				new HttpAsyncTask.Callback() {
 					@Override
-					public void run(String result) {
-						if (result != null) {
+					public void run(String result, int code) {
+						if (result != null && code == HttpURLConnection.HTTP_OK) {
 							show_toast(result);
 						} else {
-							show_toast("Upload failed");
+							show_toast("Upload failed:" + code);
 						}
 					}
 				}

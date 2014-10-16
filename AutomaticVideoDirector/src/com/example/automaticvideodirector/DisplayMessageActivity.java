@@ -1,5 +1,7 @@
 package com.example.automaticvideodirector;
 
+import java.net.HttpURLConnection;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -40,11 +42,11 @@ public class DisplayMessageActivity extends Activity {
 		new HttpAsyncTask(HttpAsyncTask.HTTP_GET, requestURL, null,
 			new HttpAsyncTask.Callback() {
 				@Override
-				public void run(String result) {
-					if (result != null) {
+				public void run(String result, int code) {
+					if (result != null && code == HttpURLConnection.HTTP_OK) {
 	    				mResponseTextView.setText(result);
 	    			} else {
-	    				mResponseTextView.setText("HTTP_GET failed");
+	    				mResponseTextView.setText("HTTP_GET failed: " + code);
 	    			}
 				}
 			}

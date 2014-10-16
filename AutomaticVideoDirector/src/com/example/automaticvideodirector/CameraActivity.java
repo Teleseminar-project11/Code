@@ -2,6 +2,7 @@ package com.example.automaticvideodirector;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -293,10 +294,11 @@ public class CameraActivity extends Activity implements Observer {
         			metaData, 
 	        		new HttpAsyncTask.Callback() {
 						@Override
-						public void run(String result) {
-							if (result != null) {
+						public void run(String result, int code) {
+							if (result != null && code == HttpURLConnection.HTTP_OK) {
 								try {   
 									//UPDATE DATABASE WITH SERVERID...
+									System.out.println(result);
 									String no_escape = result
 											.replace("\\\"", "\"")
 											.replace("\"{", "{")
@@ -306,14 +308,14 @@ public class CameraActivity extends Activity implements Observer {
 									String name = json.getString("name");
 									System.out.println(name + " --> " + serverID);
 									datasource.updateServerId(serverID, name);
-									show_toast("Metadata was succefully send to the server. "
+									show_toast("Metadata was succefully sent to the server. "
 											+name +" has new server-ID: "+ serverID);	
 								} catch (Exception e) {
 									System.out.println(e.getMessage());
 									show_toast("Upload of MetaData has failed");
 								}
 							} else {
-								show_toast("Server returned an error");
+								show_toast("Server returned an error: " + code);
 							}
 						}
 			}).execute();

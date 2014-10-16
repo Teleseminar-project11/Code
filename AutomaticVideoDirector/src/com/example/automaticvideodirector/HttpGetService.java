@@ -1,8 +1,9 @@
 package com.example.automaticvideodirector;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.net.HttpURLConnection;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import com.example.automaticvideodirector.database.MetaData;
 import com.example.automaticvideodirector.database.MetaDataSource;
 
@@ -13,7 +14,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 
@@ -103,25 +103,24 @@ public class HttpGetService extends Service{
 		new HttpAsyncTask(HttpAsyncTask.HTTP_GET, selectedURL, null,
 			new HttpAsyncTask.Callback() {
 				@Override
-				public void run(String result) {
-					if (result != null) {
-					    String no_escape = result
-								.replace("[", "")
-								.replace("]", "");
-					    System.out.println(no_escape);
+				public void run(String result, int code) {
+					if (result != null && code == HttpURLConnection.HTTP_OK) {
 						try {
 							// TODO better JSON parser
-							JSONObject json = new JSONObject(no_escape);
-							int serverID = json.getInt("id");
-							System.out.println("Requested to upload " + serverID);
-							// TODO check videos and get video id from metadata
-							uploadVideo(serverID);
+							JSONArray json = new JSONArray(result);
+							json = json.getJSONArray(0);
+							for (int i = 0; i < json.length(); ++i) {
+								int serverID = json.getJSONObject(i).getInt("id");
+								System.out.println("Requested to upload " + serverID);
+								// TODO check videos and get video id from metadata
+								uploadVideo(serverID);
+							}
 						} catch (JSONException e) {
 							System.out.println("Invalid json response");
-							show_toast("HTTP_GET failed:" + result);
+							show_toast("Invalid JSON (" + code +"): " + result);
 						}					
 	    			} else {
-	    				show_toast("HTTP_GET failed:" + result);
+	    				show_toast("HTTP_GET failed (" + code +"): " + result);
 	    			}
 				}
 			}
@@ -144,11 +143,11 @@ public class HttpGetService extends Service{
 	    	new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
 				new HttpAsyncTask.Callback() {
 					@Override
-					public void run(String result) {
-						if (result != null) {
+					public void run(String result, int code) {
+						if (result != null && code == HttpURLConnection.HTTP_CREATED) {
 							show_toast(result);
 						} else {
-							show_toast("Upload failed");
+							show_toast("Upload failed:" + code);
 						}
 					}
 				}
