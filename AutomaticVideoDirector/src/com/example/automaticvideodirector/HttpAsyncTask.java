@@ -89,6 +89,11 @@ public class HttpAsyncTask extends AsyncTask<String, Void, Wrapper> {
 	// onPostExecute displays the results of the AsyncTask.
 	@Override
 	protected void onPostExecute(Wrapper w) {
+		if (w == null) {
+			callback.run("", 0);
+			return;
+		}
+			
 		if (w.result == null) {
 			Log.d(DEBUG_TAG, "Error");
 		} else {
@@ -124,7 +129,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, Wrapper> {
 				jsonParam.put("width", data.getWidth());
 				jsonParam.put("height", data.getHeight());
 				jsonParam.put("shaking", data.getShaking());
-//				jsonParam.put("tilt", data.getTilt());
+				jsonParam.put("tilt", data.getTilt());
 				Log.d(DEBUG_TAG, jsonParam.toString());
 			} catch (JSONException e) {
 				Log.d(DEBUG_TAG, "JSON wrong");
