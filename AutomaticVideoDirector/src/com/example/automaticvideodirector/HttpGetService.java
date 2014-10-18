@@ -106,7 +106,6 @@ public class HttpGetService extends Service{
 				public void run(String result, int code) {
 					if (result != null && code == HttpURLConnection.HTTP_OK) {
 						try {
-							// TODO better JSON parser
 							JSONArray json = new JSONArray(result);
 							json = json.getJSONArray(0);
 							for (int i = 0; i < json.length(); ++i) {
@@ -120,7 +119,7 @@ public class HttpGetService extends Service{
 							show_toast("Invalid JSON (" + code +"): " + result);
 						}					
 	    			} else {
-	    				show_toast("HTTP_GET failed (" + code +"): " + result);
+	    				show_toast("HTTP_GET failed: " + code + " - " + result);
 	    			}
 				}
 			}
@@ -146,7 +145,9 @@ public class HttpGetService extends Service{
 					public void run(String result, int code) {
 						if (result != null && code == HttpURLConnection.HTTP_CREATED) {
 							show_toast(result);
-						} else {
+						} else if (code == HttpAsyncTask.SERVER_UNREACHABLE) {
+							show_toast("Upload failed: " + code + " - " + result);
+						} else {							
 							show_toast("Upload failed:" + code);
 						}
 					}

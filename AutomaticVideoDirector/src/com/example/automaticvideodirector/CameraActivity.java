@@ -327,7 +327,7 @@ public class CameraActivity extends Activity implements Observer {
 									show_toast("Upload of MetaData has failed");
 								}
 							} else {
-								show_toast("Server returned an error: " + code);
+								show_toast("Server returned an error: " + code + " - " + result);
 							}
 						}
 			}).execute();

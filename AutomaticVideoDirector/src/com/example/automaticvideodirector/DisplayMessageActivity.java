@@ -46,7 +46,7 @@ public class DisplayMessageActivity extends Activity {
 					if (result != null && code == HttpURLConnection.HTTP_OK) {
 	    				mResponseTextView.setText(result);
 	    			} else {
-	    				mResponseTextView.setText("HTTP_GET failed: " + code);
+	    				mResponseTextView.setText("HTTP_GET failed: " + code + " - " + result);
 	    			}
 				}
 			}

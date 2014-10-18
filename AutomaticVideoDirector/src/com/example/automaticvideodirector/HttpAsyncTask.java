@@ -46,6 +46,8 @@ public class HttpAsyncTask extends AsyncTask<String, Void, Wrapper> {
 	public static final int HTTP_GET    = 2;
 	public static final int HTTP_UPLOAD = 3;
 	
+	public static final int SERVER_UNREACHABLE = 0;
+	
 	private static final String DEBUG_TAG = "HTTP-POST-AutomaticVideoDirector";
 	
 	private int request;
@@ -90,7 +92,7 @@ public class HttpAsyncTask extends AsyncTask<String, Void, Wrapper> {
 	@Override
 	protected void onPostExecute(Wrapper w) {
 		if (w == null) {
-			callback.run("", 0);
+			callback.run("Server unreachable", SERVER_UNREACHABLE);
 			return;
 		}
 			

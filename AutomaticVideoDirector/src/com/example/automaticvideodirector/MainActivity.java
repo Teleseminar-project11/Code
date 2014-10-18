@@ -73,9 +73,6 @@ public class MainActivity extends Activity {
 //		CookieManager cookieManager = new CookieManager();
 //		CookieHandler.setDefault(cookieManager);
 		
-//		CookieSyncManager.createInstance(this);
-//		CookieSyncManager.getInstance().sync();
-		
 		cmrCookieMan = new CookieManager(new MyCookieStore(this), CookiePolicy.ACCEPT_ALL);
 		CookieHandler.setDefault(cmrCookieMan);
 		
@@ -154,12 +151,12 @@ public class MainActivity extends Activity {
 	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 	    if (networkInfo != null && networkInfo.isConnected()) {
 	    	isConnected = true;
-	    	Toast.makeText(MainActivity.this, "Your device has connection to the Inetrnet",
+	    	Toast.makeText(MainActivity.this, "Your device has connection to the Internet",
 	    			Toast.LENGTH_LONG).show();
 	    	Log.d(DEBUG_TAG, "Connection possible");
 	    } else {
 	    	isConnected = false;
-	    	Toast.makeText(MainActivity.this, "Your device has NO connection to the Inetrnet",
+	    	Toast.makeText(MainActivity.this, "Your device has NO connection to the Internet",
 	    			Toast.LENGTH_LONG).show();
 	    	Log.d(DEBUG_TAG, "Connection not possible");
 	    }
@@ -195,7 +192,7 @@ public class MainActivity extends Activity {
 						if (result != null && code == HttpURLConnection.HTTP_OK) {
 							show_toast(result);
 						} else {
-							show_toast("Upload failed:" + code);
+							show_toast("Upload failed:" + code + " - " + result);
 						}
 					}
 				}
@@ -241,7 +238,7 @@ public class MainActivity extends Activity {
     
     public void tryUpload(View view) {
     	show_toast("Empty callback");
-    }
+	}
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
