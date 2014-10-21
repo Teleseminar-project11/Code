@@ -1,4 +1,4 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.application;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.automaticvideodirector.database.MetaData;
+import com.example.automaticvideodirector.ui.CameraActivity;
 
 import android.os.AsyncTask;
 import android.util.Log;

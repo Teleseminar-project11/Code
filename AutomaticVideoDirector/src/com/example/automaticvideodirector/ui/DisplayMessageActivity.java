@@ -1,6 +1,9 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.ui;
 
 import java.net.HttpURLConnection;
+
+import com.example.automaticvideodirector.R;
+import com.example.automaticvideodirector.application.HttpAsyncTask;
 
 import android.app.Activity;
 import android.content.Context;

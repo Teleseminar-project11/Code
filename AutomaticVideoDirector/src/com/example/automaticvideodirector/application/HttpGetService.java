@@ -1,11 +1,14 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.application;
 
 import java.net.HttpURLConnection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import com.example.automaticvideodirector.application.HttpAsyncTask.Callback;
 import com.example.automaticvideodirector.database.MetaData;
 import com.example.automaticvideodirector.database.MetaDataSource;
+import com.example.automaticvideodirector.ui.ServerLocations;
 
 import android.app.Service;
 import android.content.Context;

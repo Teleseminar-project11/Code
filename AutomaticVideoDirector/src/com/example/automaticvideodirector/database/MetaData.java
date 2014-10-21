@@ -3,7 +3,7 @@ package com.example.automaticvideodirector.database;
 
 /**
 *
-* @author thilo
+* Meta data class
 */
 
 public class MetaData {

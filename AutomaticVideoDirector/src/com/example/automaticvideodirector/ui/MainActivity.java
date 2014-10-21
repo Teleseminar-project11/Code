@@ -1,4 +1,4 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.ui;
 
 import java.io.File;
 import java.net.CookieHandler;
@@ -6,6 +6,9 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 
+import com.example.automaticvideodirector.R;
+import com.example.automaticvideodirector.application.HttpAsyncTask;
+import com.example.automaticvideodirector.application.HttpGetService;
 import com.example.automaticvideodirector.database.MetaData;
 
 import android.net.*;
@@ -28,7 +31,7 @@ import ar.com.daidalos.afiledialog.FileChooserActivity;
 
 /**
 *
-* @author thilo
+* STARTING POINT OF THE APPLICATION
 */
 
 public class MainActivity extends Activity {
@@ -59,9 +62,6 @@ public class MainActivity extends Activity {
 
 		buttonIsConnected = (Button) findViewById(R.id.button_isConnected);
 		buttonIsConnected.setOnClickListener(isConnectedListener);
-
-		buttonConnect = (Button) findViewById(R.id.button_connect);
-		buttonConnect.setOnClickListener(connectListener);
 
 		buttonRecord = (Button) findViewById(R.id.button_record);
 		buttonRecord.setOnClickListener(recordAndShareListener);
@@ -114,19 +114,6 @@ public class MainActivity extends Activity {
 		}
 	};
 
-	OnClickListener connectListener = new OnClickListener() {	
-		@Override
-		public void onClick(View v) {
-			isConnected();
-			if(isConnected = true){
-//		    	new HttpAsyncTask("POST", data).execute();
-//				new HttpAsyncTask("GET", data).execute();
-		    	Log.d(DEBUG_TAG, "Http Task instance created");
-		    } else {
-		    	textView.setText("No network connection available.");
-		    }
-		}
-	};
 	
 	OnClickListener recordAndShareListener = new OnClickListener() {
 		@Override

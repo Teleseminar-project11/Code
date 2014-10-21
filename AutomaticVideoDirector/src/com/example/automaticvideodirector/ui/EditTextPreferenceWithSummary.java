@@ -1,4 +1,4 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;

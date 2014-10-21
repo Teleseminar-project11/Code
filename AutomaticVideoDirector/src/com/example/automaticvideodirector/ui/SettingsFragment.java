@@ -1,4 +1,6 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.ui;
+
+import com.example.automaticvideodirector.R;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

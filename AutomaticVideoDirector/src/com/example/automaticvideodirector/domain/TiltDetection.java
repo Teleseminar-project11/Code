@@ -1,4 +1,4 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.domain;
 
 import java.util.Observable;
 

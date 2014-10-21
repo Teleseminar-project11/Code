@@ -1,4 +1,4 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,7 +20,7 @@ public final class ServerLocations {
 	}
 
 	
-	static String getVideoUploadUrl(Context context, int id) {
+	public static String getVideoUploadUrl(Context context, int id) {
         return getServerAndPort(context) + video_upload + Integer.toString(id);
 	}
 	
@@ -36,7 +36,7 @@ public final class ServerLocations {
 	    return getServerAndPort(context) + event_descr  + event;
 	}
 	
-	static String getSelectedListUrl(Context context) {
+	public static String getSelectedListUrl(Context context) {
         return getServerAndPort(context) + video_selected;
 	}
 	

@@ -1,4 +1,4 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.domain;
 
 import java.util.Observable;
 
@@ -8,11 +8,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 
-
 /**
- * 
- * @author thilo
- * This class is based on the approach of the "Android Cooking Book"
+ * This class is based on the approach of the "Android Cook Book"
+ * url = http://androidcookbook.com/Recipe.seam?recipeId=529
  */
 
 public class ShakeDetection extends Observable implements SensorEventListener {

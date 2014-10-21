@@ -1,4 +1,4 @@
-package com.example.automaticvideodirector;
+package com.example.automaticvideodirector.ui;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,10 +32,13 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.automaticvideodirector.R;
+import com.example.automaticvideodirector.application.HttpAsyncTask;
 import com.example.automaticvideodirector.database.MetaData;
 import com.example.automaticvideodirector.database.MetaDataSource;
+import com.example.automaticvideodirector.domain.ShakeDetection;
+import com.example.automaticvideodirector.domain.TiltDetection;
 /**
- * @author thilo
  * 
  * This activity is responsible to record a video (of max. 20sec???). 
  * After creating the mediafile, a connection to the database has to be established to insert all the necessary meta-information.-->MetaDatSource.insertMetaData();
