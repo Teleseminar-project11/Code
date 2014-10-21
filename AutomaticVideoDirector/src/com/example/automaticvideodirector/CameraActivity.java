@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
@@ -15,6 +16,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.SensorManager;
 import android.media.CamcorderProfile;
 import android.media.MediaMetadataRetriever;
@@ -41,6 +43,7 @@ import com.example.automaticvideodirector.database.MetaDataSource;
  * Last but not least information to user, if successful or not.
  * 
  */
+
 public class CameraActivity extends Activity implements Observer {
 	
 	private static final String DEBUG_TAG = "CameraActivity";
@@ -77,6 +80,29 @@ public class CameraActivity extends Activity implements Observer {
    
 	}
 	
+	/*
+	 * http://stackoverflow.com/questions/7754263/android-record-video-with-continuous-auto-focus
+	 */	
+	boolean startContinuousAutoFocus() {
+		Camera.Parameters params = cameraInstance.getParameters();
+
+		List<String> focusModes = params.getSupportedFocusModes();
+
+		String CAF_PICTURE = Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
+		String CAF_VIDEO = Parameters.FOCUS_MODE_CONTINUOUS_VIDEO;
+		String supportedMode = focusModes.contains(CAF_PICTURE) ? CAF_PICTURE
+				: focusModes.contains(CAF_VIDEO) ? CAF_VIDEO : null;
+		
+		if (supportedMode != null) {
+			System.out.println("Autofocus enabled");
+			params.setFocusMode(supportedMode);
+			cameraInstance.setParameters(params);
+			return true;
+		}
+
+		return false;
+	}
+	
 	protected void onResume() {
 		super.onResume();
 		
@@ -88,6 +114,7 @@ public class CameraActivity extends Activity implements Observer {
 		cameraPreview = new CameraPreview(this, cameraInstance);
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(cameraPreview);
+        startContinuousAutoFocus();
         
         //ESTABLISH CONNECTION TO DATABASE 
         datasource = new MetaDataSource(this);
