@@ -8,8 +8,7 @@ package com.example.automaticvideodirector.database;
 
 public class MetaData {
 	
-	
-	//This class is for testing purposes, can be substituted by a file (Video + Metadata) class later??
+	//VARIABLES
 	private long _id;
 	private String filename;
 	private String timestamp;

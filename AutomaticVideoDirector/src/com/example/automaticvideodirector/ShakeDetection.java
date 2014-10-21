@@ -19,29 +19,28 @@ public class ShakeDetection extends Observable implements SensorEventListener {
 	
 	
 	/**
-	 * Variables declaration
+	 * VARIABLES
 	 */
 	private static final String DEBUG_TAG = "ShakeDetetction";
 	
 	private SensorManager sensorManager;
 	
 	/* Current values of acceleration, one for each axis */
-	private float xAccel;
-	private float yAccel;
-	private float zAccel;
+	private float xCurrent;
+	private float yCurrent;
+	private float zCurrent;
 
 	/* Previous values of acceleration */
-	private float xPreviousAccel;
-	private float yPreviousAccel;
-	private float zPreviousAccel;
+	private float xPrevious;
+	private float yPrevious;
+	private float zPrevious;
 
-	/* Used to suppress the first shaking */
-	private boolean firstUpdate = true;
+	private boolean updated = true;
 
 	/*Threshold is based on experimenting */
 	private final float shakeThreshold = 0.7f;
 	
-	/* Has a shaking motion been started (one direction) */
+	/* Has a shaking motion been started*/
 	private boolean shakeInitiated = false;
 	
 	
@@ -50,21 +49,21 @@ public class ShakeDetection extends Observable implements SensorEventListener {
 	 */
 	public ShakeDetection(SensorManager sensorManager){
 		this.sensorManager = sensorManager;
-		sensorManager.registerListener(this, sensorManager
-				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_NORMAL);
+		sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),	SensorManager.SENSOR_DELAY_NORMAL);
 	}
 	
 		
-	
+	/**
+	 * CALLED WHEN SENSOR EVENT LISTENER DETECTS CHANGES IN SENSOR DATA
+	 */
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		updateAccelParameters(event.values[0], event.values[1], event.values[2]);
-        if ((!shakeInitiated) && isAccelerationChanged()) {   
+		updateParameters(event.values[0], event.values[1], event.values[2]);
+        if ((!shakeInitiated) && hasAccChanged()) {   
 		    shakeInitiated = true; 
-	    } else if ((shakeInitiated) && isAccelerationChanged()) {
+	    } else if ((shakeInitiated) && hasAccChanged()) {
 		    executeShakeAction();
-	    } else if ((shakeInitiated) && (!isAccelerationChanged())) {
+	    } else if ((shakeInitiated) && (!hasAccChanged())) {
 		    shakeInitiated = false;
         }
 		
@@ -77,29 +76,29 @@ public class ShakeDetection extends Observable implements SensorEventListener {
 	}
 	
 	
-	/** Store the acceleration values given by the sensor  */
-	private void updateAccelParameters(float xNewAccel, float yNewAccel, float zNewAccel) {
+	/** Acceleraton parameters are updated on change  */
+	private void updateParameters(float xNew, float yNew, float zNew) {
         /* we have to suppress the first change of acceleration, it results from first values being initialized with 0 */
-		if (firstUpdate) {  
-			xPreviousAccel = xNewAccel;
-			yPreviousAccel = yNewAccel;
-			zPreviousAccel = zNewAccel;
-			firstUpdate = false;
+		if (updated) {  
+			xPrevious = xNew;
+			yPrevious = yNew;
+			zPrevious = zNew;
+			updated = false;
 		} else {
-			xPreviousAccel = xAccel;
-			yPreviousAccel = yAccel;
-			zPreviousAccel = zAccel;
+			xPrevious = xCurrent;
+			yPrevious = yCurrent;
+			zPrevious = zCurrent;
 		}
-		xAccel = xNewAccel;
-		yAccel = yNewAccel;
-		zAccel = zNewAccel;
+		xCurrent = xNew;
+		yCurrent = yNew;
+		zCurrent = zNew;
 	}
 	
-	/** If the values of acceleration have changed on at least two axises, we are probably in a shake motion */
-	private boolean isAccelerationChanged() {
-		float deltaX = Math.abs(xPreviousAccel - xAccel);
-		float deltaY = Math.abs(yPreviousAccel - yAccel);
-		float deltaZ = Math.abs(zPreviousAccel - zAccel);
+	/** defines when a movement is interpreted as a shaking motion */
+	private boolean hasAccChanged() {
+		float deltaX = Math.abs(xPrevious - xCurrent);
+		float deltaY = Math.abs(yPrevious - yCurrent);
+		float deltaZ = Math.abs(zPrevious - zCurrent);
 		return (deltaX > shakeThreshold && deltaY > shakeThreshold)
 				|| (deltaX > shakeThreshold && deltaZ > shakeThreshold)
 				|| (deltaY > shakeThreshold && deltaZ > shakeThreshold);
