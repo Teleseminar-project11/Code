@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class MetaDataSource {
 	
-	
+	//VARIABLES
 	private static final String DEBUG_TAG ="MetaDataSource";
 	
 	private SQLiteDatabase database;
@@ -99,7 +99,7 @@ public class MetaDataSource {
 	}
 	
 	
-	//UPDATE DB
+	//UPDATE DB WITH NEW SERVERID
 	public void updateServerId(int serverID, String filename){
 		ContentValues values = new ContentValues();	
 		values.put(VideoDatabaseHelper.COLUMN_SERVERID, serverID);
@@ -109,6 +109,7 @@ public class MetaDataSource {
 		Log.d("DATABASEUPDATE", String.valueOf(d));
 	}
 	
+	//UPDATE DB WITH NEW STATUS
 	public void updateStatus(String filename){
 		ContentValues values = new ContentValues();	
 		values.put(VideoDatabaseHelper.COLUMN_STATUS, "true");

@@ -11,10 +11,12 @@ import android.util.Log;
 public class TiltDetection extends Observable implements SensorEventListener {
 	
 	
-	
+	/**
+	 * VARIABLES
+	 */
 	private static final String DEBUG_TAG = "TiltDetetction";
-	
 	private SensorManager sensorManager;
+	
 	
 	/**
 	 * Constructor
@@ -24,13 +26,13 @@ public class TiltDetection extends Observable implements SensorEventListener {
 		sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),	SensorManager.SENSOR_DELAY_NORMAL);
 	}
 
-
+	
+	/**CALLED WHEN SENSOR EVENT LISTENER DETECTS CHANGES IN SENSOR DATA*/
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		
-
 		if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER) {
-	        	// assign directions
+	        	// assign axis
 				float x=event.values[0];
 				float y=event.values[1];
 				float z=event.values[2];

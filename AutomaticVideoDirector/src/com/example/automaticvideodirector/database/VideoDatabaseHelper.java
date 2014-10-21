@@ -6,6 +6,8 @@ import android.util.Log;
 
 public class VideoDatabaseHelper extends SQLiteOpenHelper {
 	
+	
+	//VARIABLES
 	private static final String DEBUG_TAG = "VideoDatabaseHelper";
 	
     private static final String DATABASE_NAME = "metadata.db";

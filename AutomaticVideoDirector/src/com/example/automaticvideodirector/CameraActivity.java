@@ -46,6 +46,9 @@ import com.example.automaticvideodirector.database.MetaDataSource;
 
 public class CameraActivity extends Activity implements Observer {
 	
+	/**
+	 * VARIABLES
+	 */
 	private static final String DEBUG_TAG = "CameraActivity";
 	
 	public static final int MEDIA_TYPE_IMAGE = 1;
@@ -53,22 +56,25 @@ public class CameraActivity extends Activity implements Observer {
 	
 	private boolean isRecording = false;
 	
+	//CAMERA & MEDIA RECORDER
 	private Camera cameraInstance;
 	private CameraPreview cameraPreview;
 	private MediaRecorder mediaRecorder;
 	
+	//FIEL STORAGE & DB
 	private MetaDataSource datasource;
 	private MetaData metaData;
 	private File handlerFile;
-	
-	private Button captureButton;
-	
+		
+	//SENSOR OBSERVER
 	private ShakeDetection shakeDetector;
 	private SensorManager sensorManager;
 	private TiltDetection tiltDetector;
 	private int counterShake;
 	private int counterTilt;
-
+	
+	
+	private Button captureButton;
 	
 	
 	@Override
@@ -191,7 +197,6 @@ public class CameraActivity extends Activity implements Observer {
             mediaRecorder.reset();
             mediaRecorder.release();
             mediaRecorder = null;
-//            cameraInstance.lock();
         }
     }
 
@@ -204,37 +209,35 @@ public class CameraActivity extends Activity implements Observer {
 
     /** GET AN INSTANCE OF THE CAMERA OBJECT */
 	public static Camera getCameraInstance(){
-	    Camera c = null;
+	    Camera camera = null;
 	    try {
-	        c = Camera.open(); // attempt to get a Camera instance
+	        camera = Camera.open();
 	    }
 	    catch (Exception e){
 	    	Log.d(DEBUG_TAG,"Camera.open() failed");
-	    	// Camera is not available (in use or does not exist)
 	    }
-	    return c; // returns null if camera is unavailable
+	    return camera;
 	}
 
 	/** PREPARE MEDIA RECORDER FOR RECORDING */
 	private boolean prepareVideoRecorder(){
 		Log.d(DEBUG_TAG,"prepareVideoRecorder()");
-//	    cameraInstance = camera;
 	    mediaRecorder = new MediaRecorder();
 
-	    // Step 1: Unlock and set camera to MediaRecorder
+	    //Unlock and set camera to MediaRecorder
 	    cameraInstance.unlock();
 	    mediaRecorder.setCamera(cameraInstance);
-	    // Step 2: Set sources
+	    // Set Video and Audio sources
 	    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 	    mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-	    // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-	    mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
-	    // Step 4: Set output file
+	    //SETS VIDEO QUALITY:HIGH
+	    mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+	    //SET OUTOUT FILE
 	    handlerFile = getOutputMediaFile(MEDIA_TYPE_VIDEO);
 	    mediaRecorder.setOutputFile(handlerFile.toString());
-	    // Step 5: Set the preview output
+	    //Set the preview output to our preview surfaceholder
 	    mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
-	    // Step 6: Prepare configured MediaRecorder
+	    // Prepare configured MediaRecorder
 	    try {
 	    	mediaRecorder.prepare();
 	    } catch (IllegalStateException e) {
@@ -250,13 +253,7 @@ public class CameraActivity extends Activity implements Observer {
 	    return true;
 	}
 	
-	
-
-	/** Create a file Uri for saving an image or video */
-//	private static Uri getOutputMediaFileUri(int type){
-//	      return Uri.fromFile(getOutputMediaFile(type));
-//	}
-	
+		
 	static public String getVideoDir() {
 		return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) 
 				+ "/Automatic Video Director";
@@ -264,20 +261,13 @@ public class CameraActivity extends Activity implements Observer {
 
 	/** Create a File for saving an image or video */
 	private static File getOutputMediaFile(int type){
-	    // To be safe, we also should check that the SDCard is mounted
-	    // using Environment.getExternalStorageState() before doing this!!!!!!!!!!!!!!.
 		Log.d("CameraActivity","in getOutputMediaFile1");
-//	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-//	              Environment.DIRECTORY_PICTURES), "Automatic Video Director");
 		File mediaStorageDir = new File(getVideoDir());
-	    // This location works best if we want the created images to be shared
-	    // between applications and persist after your app has been uninstalled.
 	    Log.d("CameraActivity",mediaStorageDir.getPath());
-	    // Create the storage directory if it does not exist
 	    if (! mediaStorageDir.exists()){
-	    	Log.d("MyCameraApp", "Directory does not exists");
+	    	Log.d("CameraActivity", "Directory does not exists");
 	        if (! mediaStorageDir.mkdirs()){
-	            Log.d("MyCameraApp", "failed to create directory");
+	            Log.d("CameraActivity", "failed to create directory");
 	            return null;
 	        }
 	    }
