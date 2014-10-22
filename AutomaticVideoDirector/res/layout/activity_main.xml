@@ -25,8 +25,6 @@
         android:layout_below="@id/textView_welcome"
         android:text="@string/button_is_connected" />
 
-
-
     <Button
         android:id="@+id/button_record"
         android:layout_width="wrap_content"
@@ -45,10 +43,19 @@
         android:layout_below="@id/button_isConnected"
         android:onClick="sendHttpGet"
         android:text="@string/button_http_get" />
-
-
     
-	<LinearLayout
+    <Button
+        android:id="@+id/button_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/textView_welcome"
+        android:onClick="launchSettings"
+        android:text="@string/button_settings"
+    />
+
+<!-- 	<LinearLayout
 	    android:id="@+id/file_selection_linear"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
@@ -73,9 +80,9 @@
             android:layout_height="wrap_content"
             android:onClick="sendFile"
             android:text="@string/button_send" />
-    </LinearLayout>
+    </LinearLayout> -->
     
-    <Button
+<!--     <Button
         android:id="@+id/button_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,9 +91,9 @@
         android:layout_below="@id/file_selection_linear"
         android:onClick="launchSettings"
         android:text="@string/button_settings"
-    />
+    /> -->
     
-    <Button
+<!--     <Button
         android:id="@+id/button_try_upload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -95,6 +102,6 @@
         android:layout_toEndOf="@id/button_settings"
         android:onClick="tryUpload"
         android:text="@string/button_try_upload"
-    />
+    /> -->
     
 </RelativeLayout>

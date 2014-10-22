@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
 
 		textView = (TextView) findViewById(R.id.textView_welcome);
 
-		filePathTextView = (TextView) findViewById(R.id.select_file);
+//		filePathTextView = (TextView) findViewById(R.id.select_file);
 
 //		CookieManager cookieManager = new CookieManager();
 //		CookieHandler.setDefault(cookieManager);
@@ -155,43 +155,43 @@ public class MainActivity extends Activity {
         toast.show();
 	}
 	
-    public void sendFile(View view) {    	
-    	EditText editText = (EditText) findViewById(R.id.select_file);
-        String uploadFile = editText.getText().toString();
-        Log.d(DEBUG_TAG, uploadFile);
-        if (!(new File(uploadFile).exists())) {
-        	show_toast("File does not exist!");
-        	return;
-        }
-        
-        // TODO get video id from metadata
-        String requestURL = ServerLocations.getVideoUploadUrl(this, 1);
-        
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-	    if (networkInfo != null && networkInfo.isConnected()) {
-	    	MetaData video = new MetaData();
-	    	video.setVideoFile(uploadFile);
-			new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
-				new HttpAsyncTask.Callback() {
-					@Override
-					public void run(String result, int code) {
-						if (result != null && code == HttpURLConnection.HTTP_OK) {
-							show_toast(result);
-						} else {
-							show_toast("Upload failed:" + code + " - " + result);
-						}
-					}
-				}
-			).execute();
-	    	
-        } else {
-	    	show_toast("No network");
-	    	return;
-	    }
-    	
-    	show_toast("Transefing: " + filePathTextView.getText());
-    }
+//    public void sendFile(View view) {    	
+//    	EditText editText = (EditText) findViewById(R.id.select_file);
+//        String uploadFile = editText.getText().toString();
+//        Log.d(DEBUG_TAG, uploadFile);
+//        if (!(new File(uploadFile).exists())) {
+//        	show_toast("File does not exist!");
+//        	return;
+//        }
+//        
+//        // TODO get video id from metadata
+//        String requestURL = ServerLocations.getVideoUploadUrl(this, 1);
+//        
+//        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+//	    if (networkInfo != null && networkInfo.isConnected()) {
+//	    	MetaData video = new MetaData();
+//	    	video.setVideoFile(uploadFile);
+//			new HttpAsyncTask(HttpAsyncTask.HTTP_UPLOAD, requestURL, video,
+//				new HttpAsyncTask.Callback() {
+//					@Override
+//					public void run(String result, int code) {
+//						if (result != null && code == HttpURLConnection.HTTP_OK) {
+//							show_toast(result);
+//						} else {
+//							show_toast("Upload failed:" + code + " - " + result);
+//						}
+//					}
+//				}
+//			).execute();
+//	    	
+//        } else {
+//	    	show_toast("No network");
+//	    	return;
+//	    }
+//    	
+//    	show_toast("Transefing: " + filePathTextView.getText());
+//    }
 
     public void pickFile(View view) {
     	// One way to do it. Launches application selection dialog.
